@@ -174,8 +174,8 @@ const ComponentRoutes: IComponentRoutes = {
       }
     }
   },
-  "/settings": {
-    label: "Admin Settings",
+  "/tools": {
+    label: "Admin Tools",
     icon: SettingsIcon,
     $ref: DummyComponent,
     children: {
