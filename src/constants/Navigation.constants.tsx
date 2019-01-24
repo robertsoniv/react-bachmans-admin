@@ -6,10 +6,16 @@ import OrderIcon from "@material-ui/icons/Receipt";
 import DeliveryIcon from "@material-ui/icons/LocalShipping";
 import MiscellaneousIcon from "@material-ui/icons/Settings";
 import SettingsIcon from "@material-ui/icons/Lock";
-import Orders, { DummyComponent, BuildOrder } from "../DummyComponent";
+import {
+  DummyComponent,
+  BuildOrder,
+  Orders,
+  Customers
+} from "../DummyComponent";
 
 interface IChildComponent {
   label: string;
+  tabLabel?: string;
   $ref?: React.ComponentPropsWithRef<any>;
 }
 
@@ -34,13 +40,16 @@ const ComponentRoutes: IComponentRoutes = {
     // queryParams: [],
     children: {
       "": {
-        label: "Recent Orders"
+        label: "Recent Orders",
+        tabLabel: "Recent"
       },
       "/wired": {
-        label: "Wired Orders"
+        label: "Wired Orders",
+        tabLabel: "Wired"
       },
       "/exceptions": {
-        label: "Exceptions List"
+        label: "Exceptions List",
+        tabLabel: "Exceptions"
       },
       "/build": {
         label: "Build Order",
@@ -51,22 +60,26 @@ const ComponentRoutes: IComponentRoutes = {
   "/customers": {
     label: "Customers",
     icon: CustomerIcon,
-    $ref: DummyComponent,
+    $ref: Customers,
     children: {
       "": {
-        label: "All Customers"
+        label: "All Customers",
+        tabLabel: "All"
       },
       "/active": {
-        label: "Active Customers"
+        label: "Active Customers",
+        tabLabel: "Active"
       },
       "/inactive": {
-        label: "Inactive Customers"
+        label: "Inactive Customers",
+        tabLabel: "Inactive"
       },
       "/employees": {
         label: "Employees"
       },
       "/orphaned": {
-        label: "Orphaned Accounts"
+        label: "Orphaned Accounts",
+        tabLabel: "Orphaned"
       }
     }
   },

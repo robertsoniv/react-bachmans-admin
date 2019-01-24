@@ -1,26 +1,13 @@
 import React from "react";
-import {
-  Tabs,
-  Tab,
-  AppBar,
-  withStyles,
-  Theme,
-  createStyles,
-  Toolbar,
-  Typography
-} from "@material-ui/core";
-import { NavLink } from "react-router-dom";
+import { Tabs, Tab, AppBar, Toolbar, Typography } from "@material-ui/core";
 import ComponentRoutes from "./constants/Navigation.constants";
 
 interface OrderListProps {
   match: any;
-  classes: any;
   history: any;
 }
 
-const styles = (theme: Theme) => createStyles({});
-
-class Orders extends React.Component<OrderListProps> {
+export class Orders extends React.Component<OrderListProps> {
   public baseRoute = "/orders";
 
   public handleChange = (event: any, value: string) => {
@@ -28,10 +15,9 @@ class Orders extends React.Component<OrderListProps> {
   };
 
   public render() {
-    const { classes } = this.props;
     const filter = this.props.match.path;
     return (
-      <AppBar className={classes.appBar} color="secondary" position="static">
+      <AppBar color="secondary" position="static">
         <Toolbar>
           <Typography variant="h5" color="inherit">
             Order Management
@@ -39,7 +25,6 @@ class Orders extends React.Component<OrderListProps> {
         </Toolbar>
         <Tabs
           value={filter}
-          className={classes.tabs}
           indicatorColor="primary"
           onChange={this.handleChange}
         >
@@ -49,7 +34,7 @@ class Orders extends React.Component<OrderListProps> {
                 <Tab
                   key={this.baseRoute + childPath}
                   value={this.baseRoute + childPath}
-                  label={childComponent.label}
+                  label={childComponent.tabLabel || childComponent.label}
                 />
               )
           )}
@@ -58,8 +43,42 @@ class Orders extends React.Component<OrderListProps> {
     );
   }
 }
+export class Customers extends React.Component<OrderListProps> {
+  public baseRoute = "/customers";
 
-export default withStyles(styles)(Orders);
+  public handleChange = (event: any, value: string) => {
+    this.props.history.push(value);
+  };
+
+  public render() {
+    const filter = this.props.match.path;
+    return (
+      <AppBar color="secondary" position="static">
+        <Toolbar>
+          <Typography variant="h5" color="inherit">
+            Bachman's Customers
+          </Typography>
+        </Toolbar>
+        <Tabs
+          value={filter}
+          indicatorColor="primary"
+          onChange={this.handleChange}
+        >
+          {Object.entries(ComponentRoutes[this.baseRoute].children).map(
+            ([childPath, childComponent]: [string, any]) =>
+              !childComponent.$ref && (
+                <Tab
+                  key={this.baseRoute + childPath}
+                  value={this.baseRoute + childPath}
+                  label={childComponent.tabLabel || childComponent.label}
+                />
+              )
+          )}
+        </Tabs>
+      </AppBar>
+    );
+  }
+}
 
 export class BuildOrder extends React.Component {
   public render() {
