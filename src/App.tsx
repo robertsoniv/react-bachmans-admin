@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   AppBar,
   createStyles,
@@ -35,7 +35,6 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import MenuIcon from "@material-ui/icons/Menu";
 
 import ComponentRoutes from "./constants/Navigation.constants";
-import DummyComponent from "./DummyComponent";
 
 const drawerWidth = 300;
 
@@ -72,8 +71,7 @@ const styles = (theme: Theme) =>
       width: drawerWidth
     },
     content: {
-      flexGrow: 1,
-      padding: theme.spacing.unit * 3
+      flexGrow: 1
     },
     nested: {
       paddingTop: theme.spacing.unit,
@@ -135,12 +133,8 @@ class App extends React.Component<AppProps, AppState> {
       <List>
         {Object.entries(ComponentRoutes).map(
           ([path, component]: [string, any], index) => (
-            <React.Fragment>
-              <ListItem
-                component={this.getNavLink(path, component)}
-                button
-                key={path}
-              >
+            <React.Fragment key={path}>
+              <ListItem component={this.getNavLink(path, component)} button>
                 <ListItemIcon>
                   <Icon component={component.icon} />
                 </ListItemIcon>
@@ -243,7 +237,7 @@ class App extends React.Component<AppProps, AppState> {
               </Drawer>
             </Hidden>
           </nav>
-          <main>
+          <main className={classes.content}>
             <div className={classes.toolbar} />
             <Switch>
               {Object.entries(ComponentRoutes).map(

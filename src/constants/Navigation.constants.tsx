@@ -6,9 +6,27 @@ import OrderIcon from "@material-ui/icons/Receipt";
 import DeliveryIcon from "@material-ui/icons/LocalShipping";
 import MiscellaneousIcon from "@material-ui/icons/Settings";
 import SettingsIcon from "@material-ui/icons/Lock";
-import DummyComponent, { Orders, BuildOrder } from "../DummyComponent";
+import Orders, { DummyComponent, BuildOrder } from "../DummyComponent";
 
-const ComponentRoutes = {
+interface IChildComponent {
+  label: string;
+  $ref?: React.ComponentPropsWithRef<any>;
+}
+
+interface IParentComponent {
+  label: string;
+  icon: any;
+  $ref?: React.ComponentPropsWithRef<any>;
+  children: {
+    [path: string]: IChildComponent;
+  };
+}
+
+interface IComponentRoutes {
+  [path: string]: IParentComponent;
+}
+
+const ComponentRoutes: IComponentRoutes = {
   "/orders": {
     label: "Orders",
     icon: OrderIcon,
@@ -16,8 +34,7 @@ const ComponentRoutes = {
     // queryParams: [],
     children: {
       "": {
-        label: "Recent Orders",
-        filters: "recent"
+        label: "Recent Orders"
       },
       "/wired": {
         label: "Wired Orders"
