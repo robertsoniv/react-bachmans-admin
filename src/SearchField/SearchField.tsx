@@ -12,7 +12,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Close";
 
 interface SearchFieldProps {
-  onSearch: (searchTerm?: string) => void;
+  onSearch: (newParams: Object) => void;
   value: string;
   classes: any;
 }
@@ -58,12 +58,12 @@ class SearchField extends React.Component<
 
   public handleSearch = (event: React.FormEvent) => {
     event.preventDefault();
-    this.props.onSearch(this.state.searchTerm);
+    this.props.onSearch({ search: this.state.searchTerm });
   };
 
   public handleClear = (event: React.MouseEvent) => {
     this.setState({ searchTerm: "" });
-    this.props.onSearch();
+    this.props.onSearch({ search: "" });
   };
 
   public render() {

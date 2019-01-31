@@ -163,7 +163,7 @@ interface DateRangeSelectorProps {
   startDate: string | null;
   endDate: string | null;
   numberOfMonths?: number;
-  onChange: (startDate: string | null, endDate: string | null) => void;
+  onChange: (newParams: Object) => void;
   format: string;
   classes: any;
   theme: Theme;
@@ -198,10 +198,10 @@ class DateRangeSelector extends React.Component<
   };
 
   public handleDatesChange = ({ startDate, endDate }: DateRangeProps) => {
-    this.props.onChange(
-      startDate ? startDate.format(this.props.format) : null,
-      endDate ? endDate.format(this.props.format) : null
-    );
+    this.props.onChange({
+      from: startDate ? startDate.format(this.props.format) : null,
+      to: endDate ? endDate.format(this.props.format) : null
+    });
   };
 
   public onMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {

@@ -86,28 +86,16 @@ class OrderManagement extends React.Component<
     });
   };
 
-  public handleSearch = (value?: string) => {
+  public handleParamUpdate = (newParams: Object) => {
     const params = new URLSearchParams(this.props.location.search);
-    value ? params.set("search", value) : params.delete("search");
-    this.pushSearchParams(params);
-  };
-
-  public handleDateRangeChange = (
-    startDate: string | null,
-    endDate: string | null
-  ) => {
-    const params = new URLSearchParams(this.props.location.search);
-    startDate ? params.set("from", startDate) : params.delete("from");
-    endDate ? params.set("to", endDate) : params.delete("to");
-    this.pushSearchParams(params);
-  };
-
-  public pushSearchParams(params: URLSearchParams) {
+    Object.entries(newParams).forEach(([name, value]: [string, string]) => {
+      value ? params.set(name, value) : params.delete(name);
+    });
     this.props.history.push({
       ...this.props.location,
       search: params.toString()
     });
-  }
+  };
 
   public render() {
     const { classes } = this.props;
@@ -126,11 +114,14 @@ class OrderManagement extends React.Component<
           </Tabs>
         </AppBar>
         <div className={classes.orderFilters}>
-          <SearchField onSearch={this.handleSearch} value={this.state.search} />
+          <SearchField
+            onSearch={this.handleParamUpdate}
+            value={this.state.search}
+          />
           <DateRangeSelector
             startDate={this.state.from}
             endDate={this.state.to}
-            onChange={this.handleDateRangeChange}
+            onChange={this.handleParamUpdate}
             format={"MM-DD-YYYY"}
           />
         </div>
