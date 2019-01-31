@@ -21,7 +21,7 @@ const style = (theme: Theme) =>
     }
   });
 
-class ListItemNavLink extends React.Component<{
+interface ListItemNavLinkProps {
   icon: ReactElement<IconProps>;
   activeIcon: ReactElement<IconProps>;
   primary?: string;
@@ -30,38 +30,38 @@ class ListItemNavLink extends React.Component<{
   exact?: boolean;
   strict?: boolean;
   classes: any;
-}> {
-  renderLink = (props: any) => <Link {...props} to={this.props.to} />;
-  public render() {
-    const { classes } = this.props;
-    const path = this.props.to;
-
-    // Regex taken from: https://github.com/pillarjs/path-to-regexp/blob/master/index.js#L202
-    const escapedPath =
-      path && path.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
-    return (
-      <Route
-        path={escapedPath}
-        exact={this.props.exact}
-        strict={this.props.strict}
-        children={({ match }) => {
-          const isActive = !!match;
-
-          return (
-            <ListItem button component={this.renderLink}>
-              <ListItemIcon className={isActive ? classes.activeIcon : null}>
-                {isActive ? this.props.activeIcon : this.props.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={this.props.primary}
-                secondary={this.props.secondary}
-              />
-            </ListItem>
-          );
-        }}
-      />
-    );
-  }
 }
+
+const ListItemNavLink: React.FunctionComponent<ListItemNavLinkProps> = (
+  props: ListItemNavLinkProps
+) => {
+  const renderLink = (listItemProps: any) => (
+    <Link {...listItemProps} to={props.to} />
+  );
+  const { classes } = props;
+  const path = props.to;
+
+  // Regex taken from: https://github.com/pillarjs/path-to-regexp/blob/master/index.js#L202
+  const escapedPath = path && path.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
+  return (
+    <Route
+      path={escapedPath}
+      exact={props.exact}
+      strict={props.strict}
+      children={({ match }) => {
+        const isActive = !!match;
+
+        return (
+          <ListItem button component={renderLink}>
+            <ListItemIcon className={isActive ? classes.activeIcon : null}>
+              {isActive ? props.activeIcon : props.icon}
+            </ListItemIcon>
+            <ListItemText primary={props.primary} secondary={props.secondary} />
+          </ListItem>
+        );
+      }}
+    />
+  );
+};
 
 export default withStyles(style)(ListItemNavLink);

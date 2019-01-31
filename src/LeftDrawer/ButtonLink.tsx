@@ -6,13 +6,13 @@ interface ButtonLinkProps extends ButtonProps {
   to: string;
 }
 
-class ButtonLink extends React.Component<ButtonLinkProps> {
-  public buildLink = (to: string) => (props: any) => {
+const ButtonLink: React.FunctionComponent<ButtonLinkProps> = (
+  props: ButtonLinkProps
+) => {
+  const buildLink = (to: string) => (props: any) => {
     return <Link to={to} {...props} />;
   };
-  public render() {
-    return <Button component={this.buildLink(this.props.to)} {...this.props} />;
-  }
-}
+  return <Button component={buildLink(props.to)} {...props} />;
+};
 
 export default ButtonLink;

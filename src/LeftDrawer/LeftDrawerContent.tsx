@@ -26,61 +26,59 @@ import MiscellaneousIconActive from "@material-ui/icons/SettingsTwoTone";
 import SettingsIcon from "@material-ui/icons/LockOutlined";
 import SettingsIconActive from "@material-ui/icons/LockTwoTone";
 
-class LeftDrawerContent extends React.Component {
-  public render() {
-    return (
-      <List>
-        <ListItemNavLink
-          to="/orders"
-          primary="Orders"
-          icon={<OrdersIcon />}
-          activeIcon={<OrdersIconActive />}
-        />
-        <ListItemNavLink
-          to="/customers"
-          primary="Customers"
-          icon={<CustomersIcon />}
-          activeIcon={<CustomersIconActive />}
-        />
-        <ListItemNavLink
-          to="/categories"
-          primary="Categories"
-          icon={<CategoriesIcon />}
-          activeIcon={<CategoriesIconActive />}
-        />
-        <ListItemNavLink
-          to="/products"
-          primary="Products"
-          icon={<ProductsIcon />}
-          activeIcon={<ProductsIconActive />}
-        />
-        <ListItemNavLink
-          to="/events"
-          primary="Events"
-          icon={<EventsIcon />}
-          activeIcon={<EventsIconActive />}
-        />
-        <ListItemNavLink
-          to="/delivery"
-          primary="Delivery"
-          icon={<DeliveryIcon />}
-          activeIcon={<DeliveryIconActive />}
-        />
-        <ListItemNavLink
-          to="/miscellaneous"
-          primary="Miscellaneous"
-          icon={<MiscellaneousIcon />}
-          activeIcon={<MiscellaneousIconActive />}
-        />
-        <ListItemNavLink
-          to="/admin"
-          primary="Admin Tools"
-          icon={<SettingsIcon />}
-          activeIcon={<SettingsIconActive />}
-        />
-      </List>
-    );
-  }
-}
+const LeftDrawerContent: React.FunctionComponent = () => {
+  return (
+    <List>
+      <ListItemNavLink
+        to="/orders"
+        primary="Orders"
+        icon={<OrdersIcon />}
+        activeIcon={<OrdersIconActive />}
+      />
+      <ListItemNavLink
+        to="/customers"
+        primary="Customers"
+        icon={<CustomersIcon />}
+        activeIcon={<CustomersIconActive />}
+      />
+      <ListItemNavLink
+        to="/categories"
+        primary="Categories"
+        icon={<CategoriesIcon />}
+        activeIcon={<CategoriesIconActive />}
+      />
+      <ListItemNavLink
+        to="/products"
+        primary="Products"
+        icon={<ProductsIcon />}
+        activeIcon={<ProductsIconActive />}
+      />
+      <ListItemNavLink
+        to="/events"
+        primary="Events"
+        icon={<EventsIcon />}
+        activeIcon={<EventsIconActive />}
+      />
+      <ListItemNavLink
+        to="/delivery"
+        primary="Delivery"
+        icon={<DeliveryIcon />}
+        activeIcon={<DeliveryIconActive />}
+      />
+      <ListItemNavLink
+        to="/miscellaneous"
+        primary="Miscellaneous"
+        icon={<MiscellaneousIcon />}
+        activeIcon={<MiscellaneousIconActive />}
+      />
+      <ListItemNavLink
+        to="/admin"
+        primary="Admin Tools"
+        icon={<SettingsIcon />}
+        activeIcon={<SettingsIconActive />}
+      />
+    </List>
+  );
+};
 
 export default LeftDrawerContent;
