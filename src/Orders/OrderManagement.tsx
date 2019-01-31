@@ -10,9 +10,9 @@ import {
 
 import { RouteComponentProps } from "react-router";
 import OrderList from "./OrderList";
-import OrderSearch from "./OrderSearch";
+import SearchField from "../SearchField/SearchField";
 
-import DateRangeSelector from "./DateRangeSelector";
+import DateRangeSelector from "../DateRangeSelector/DateRangeSelector";
 
 interface OrderManagementParams {
   tab?: string;
@@ -164,7 +164,7 @@ class OrderManagement extends React.Component<
           </Tabs>
         </AppBar>
         <div className={classes.orderFilters}>
-          <OrderSearch onSearch={this.handleSearch} value={this.state.search} />
+          <SearchField onSearch={this.handleSearch} value={this.state.search} />
           <DateRangeSelector
             startDate={this.state.from}
             endDate={this.state.to}

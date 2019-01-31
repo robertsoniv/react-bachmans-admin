@@ -11,7 +11,7 @@ import {
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Close";
 
-interface OrderSearchProps {
+interface SearchFieldProps {
   onSearch: (searchTerm?: string) => void;
   value: string;
   classes: any;
@@ -34,11 +34,11 @@ const styles = (theme: Theme) =>
     }
   });
 
-class OrderSearch extends React.Component<
-  OrderSearchProps,
+class SearchField extends React.Component<
+  SearchFieldProps,
   { searchTerm?: string }
 > {
-  constructor(props: OrderSearchProps) {
+  constructor(props: SearchFieldProps) {
     super(props);
   }
 
@@ -46,7 +46,7 @@ class OrderSearch extends React.Component<
     this.setState({ searchTerm: this.props.value || "" });
   };
 
-  componentDidUpdate = (prevProps: OrderSearchProps) => {
+  componentDidUpdate = (prevProps: SearchFieldProps) => {
     if (this.props.value !== prevProps.value) {
       this.setState({ searchTerm: this.props.value || "" });
     }
@@ -102,4 +102,4 @@ class OrderSearch extends React.Component<
   }
 }
 
-export default withStyles(styles)(OrderSearch);
+export default withStyles(styles)(SearchField);

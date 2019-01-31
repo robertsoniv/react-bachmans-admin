@@ -12,7 +12,6 @@ import {
 
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
-import "./datepicker.css";
 
 import { DateRangePicker } from "react-dates";
 import moment, { Moment } from "moment";
@@ -24,10 +23,76 @@ import ClearIcon from "@material-ui/icons/Close";
 import NavNextIcon from "@material-ui/icons/NavigateNext";
 import NavPrevIcon from "@material-ui/icons/NavigateBefore";
 
-const styles = (theme: Theme) =>
-  createStyles({
+const styles = (theme: Theme) => {
+  var light = theme.palette.type === "light";
+  var placeholder = {
+    color: "currentColor",
+    opacity: light ? 0.42 : 0.5,
+    transition: theme.transitions.create("opacity", {
+      duration: theme.transitions.duration.shorter
+    })
+  };
+  return createStyles({
     root: {
-      padding: "2px 4px"
+      padding: "2px 4px",
+      "& .DateInput": {
+        ...theme.typography.body1,
+        flex: "1 0 auto",
+        width: 75
+      },
+
+      "& .DateRangePickerInput": {
+        display: "flex",
+        flexFlow: "row nowrap",
+        padding: 0,
+        alignItems: "center"
+      },
+      "& .DateRangePickerInput_clearDates": {
+        margin: 0,
+        padding: 0,
+        flex: 0,
+        position: "static",
+        top: "auto",
+        right: "auto",
+        transform: "none"
+      },
+      "& .DateRangePickerInput_calendarIcon": {
+        margin: 0,
+        padding: 0,
+        flex: 0
+      },
+      "& .DateInput_input": {
+        ...theme.typography.body1,
+        fontFamily: theme.typography.fontFamily,
+        color: theme.palette.text.primary,
+        fontSize: theme.typography.pxToRem(16),
+        lineHeight: "1.1875em",
+        // Reset (19px), match the native input line-height
+        display: "inline-flex",
+        alignItems: "center",
+        "&$disabled": {
+          color: theme.palette.text.disabled,
+          cursor: "default"
+        },
+        letterSpacing: "normal",
+        margin: 0,
+        border: 0,
+        padding: "6px 0 7px",
+        background: "transparent",
+        // Fix IE 11 width issue
+        "&::-webkit-input-placeholder": placeholder,
+        "&::-moz-placeholder": placeholder,
+        // Firefox 19+
+        "&:-ms-input-placeholder": placeholder,
+        // IE 11
+        "&::-ms-input-placeholder": placeholder
+      },
+      "& .DateRangePicker_picker": {
+        left: `${-4}px !important`
+      },
+      "& .DayPicker__withBorder": {
+        boxShadow: theme.shadows[2]
+      }
     },
     iconButton: {
       padding: 10
@@ -41,12 +106,15 @@ const styles = (theme: Theme) =>
     navPrevButton: {
       position: "absolute",
       left: theme.spacing.unit,
-      top: theme.spacing.unit * 2
+      top: theme.spacing.unit
     },
     navNextButton: {
       position: "absolute",
       right: theme.spacing.unit,
-      top: theme.spacing.unit * 2
+      top: theme.spacing.unit
+    },
+    monthText: {
+      fontWeight: theme.typography.fontWeightMedium
     },
     emptyCell: {
       width: 39,
@@ -84,6 +152,7 @@ const styles = (theme: Theme) =>
       border: "none"
     }
   });
+};
 
 interface DateRangeProps {
   startDate: Moment | null;
@@ -148,13 +217,13 @@ class DateRangeSelector extends React.Component<
   };
 
   public initialMonth = () => {
-    if (!!this.state.startDate) {
-      return this.state.startDate.startOf("M");
-    }
     const offset = this.props.numberOfMonths || 2;
-    return moment()
-      .subtract(offset - 1, "M")
-      .startOf("M");
+    return (
+      this.state.startDate ||
+      moment()
+        .subtract(offset - 1, "M")
+        .startOf("M")
+    );
   };
 
   public onKeyDown = (day: any) => (event: React.KeyboardEvent) => {
@@ -179,7 +248,6 @@ class DateRangeSelector extends React.Component<
         day.modifiers.has("selected-end");
     }
 
-    console.log(day);
     return day && day.day ? (
       <ButtonBase
         disabled={day.modifiers && day.modifiers.has("blocked")}
@@ -201,7 +269,6 @@ class DateRangeSelector extends React.Component<
   };
 
   public renderDayContents = (day: Moment) => {
-    console.log(day);
     return day.date().toString();
   };
 
@@ -210,7 +277,12 @@ class DateRangeSelector extends React.Component<
   };
 
   public renderMonthText = (day: Moment) => {
-    return <Typography variant="h6">{day.format("MMMM YYYY")}</Typography>;
+    const { monthText } = this.props.classes;
+    return (
+      <Typography variant="body1" className={monthText}>
+        {day.format("MMMM YYYY")}
+      </Typography>
+    );
   };
 
   public render() {
