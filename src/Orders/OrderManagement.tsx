@@ -32,49 +32,11 @@ interface OrderManagementState {
 
 const styles = (theme: Theme) =>
   createStyles({
-    iconButton: {
-      padding: 10
-    },
     orderFilters: {
       display: "flex",
       flexFlow: "row nowrap",
       alignItems: "center",
       margin: theme.spacing.unit * 2
-    },
-    dateFilterPaper: {
-      padding: "2px 4px 2px 0"
-    },
-    customArrowIcon: {
-      fontSize: 16,
-      width: 44,
-      marginTop: theme.spacing.unit / 2,
-      color: "rgba(0,0,0,0.4)"
-    },
-    dayButton: {
-      display: "table-cell",
-      flex: "none",
-      fontSize: 16,
-      width: 39,
-      height: 39,
-      padding: 0,
-      border: "none",
-      ...theme.typography.body1
-    },
-    dayHighlighted: {
-      backgroundColor: theme.palette.primary.light
-    },
-    daySpanSelected: {
-      backgroundColor: theme.palette.primary.main
-    },
-    daySpanStart: {
-      backgroundColor: theme.palette.primary.dark,
-      borderTopLeftRadius: "50%",
-      borderBottomLeftRadius: "50%"
-    },
-    daySpanEnd: {
-      backgroundColor: theme.palette.primary.dark,
-      borderTopRightRadius: "50%",
-      borderBottomRightRadius: "50%"
     }
   });
 
