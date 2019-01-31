@@ -32,36 +32,46 @@ interface ListItemNavLinkProps {
   classes: any;
 }
 
-const ListItemNavLink: React.FunctionComponent<ListItemNavLinkProps> = (
-  props: ListItemNavLinkProps
-) => {
-  const renderLink = (listItemProps: any) => (
-    <Link {...listItemProps} to={props.to} />
+class ListItemNavLink extends React.Component<ListItemNavLinkProps> {
+  public renderLink = (listItemProps: any) => (
+    <Link {...listItemProps} to={this.props.to} />
   );
-  const { classes } = props;
-  const path = props.to;
 
-  // Regex taken from: https://github.com/pillarjs/path-to-regexp/blob/master/index.js#L202
-  const escapedPath = path && path.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
-  return (
-    <Route
-      path={escapedPath}
-      exact={props.exact}
-      strict={props.strict}
-      children={({ match }) => {
-        const isActive = !!match;
+  public render() {
+    const {
+      classes,
+      strict,
+      exact,
+      activeIcon,
+      icon,
+      primary,
+      secondary
+    } = this.props;
+    const path = this.props.to;
 
-        return (
-          <ListItem button component={renderLink}>
-            <ListItemIcon className={isActive ? classes.activeIcon : null}>
-              {isActive ? props.activeIcon : props.icon}
-            </ListItemIcon>
-            <ListItemText primary={props.primary} secondary={props.secondary} />
-          </ListItem>
-        );
-      }}
-    />
-  );
-};
+    // Regex taken from: https://github.com/pillarjs/path-to-regexp/blob/master/index.js#L202
+    const escapedPath =
+      path && path.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
+    return (
+      <Route
+        path={escapedPath}
+        exact={exact}
+        strict={strict}
+        children={({ match }) => {
+          const isActive = !!match;
+
+          return (
+            <ListItem button component={this.renderLink}>
+              <ListItemIcon className={isActive ? classes.activeIcon : null}>
+                {isActive ? activeIcon : icon}
+              </ListItemIcon>
+              <ListItemText primary={primary} secondary={secondary} />
+            </ListItem>
+          );
+        }}
+      />
+    );
+  }
+}
 
 export default withStyles(style)(ListItemNavLink);
