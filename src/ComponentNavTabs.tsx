@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Tabs,
-  Tab,
-  AppBar,
-  Toolbar,
-  Typography,
-  Button
-} from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
 import ComponentRoutes from "./constants/Navigation.constants";
 
 export interface ComponentNavTabsProps {

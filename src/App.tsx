@@ -1,40 +1,26 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   AppBar,
   createStyles,
   CssBaseline,
-  Divider,
   Drawer,
   Hidden,
   IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Theme,
   Toolbar,
   Typography,
-  withStyles,
-  Icon,
-  Collapse,
-  ListItemSecondaryAction,
-  Link
+  withStyles
 } from "@material-ui/core";
 
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  NavLink
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import NotificationIcon from "@material-ui/icons/Notifications";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
 import MenuIcon from "@material-ui/icons/Menu";
 
-import ComponentRoutes from "./constants/Navigation.constants";
+import LeftDrawerContent from "./LeftDrawer/LeftDrawerContent";
+import OrderManagement from "./Orders/OrderManagement";
+import DummyComponent from "./DummyComponent";
 
 const drawerWidth = 300;
 
@@ -88,102 +74,19 @@ interface AppProps {
 
 interface AppState {
   mobileOpen: boolean;
-  expandedMenuItems: string[];
 }
 
 class App extends React.Component<AppProps, AppState> {
   state = {
-    mobileOpen: false,
-    expandedMenuItems: new Array()
+    mobileOpen: false
   };
 
   handleDrawerToggle = () => {
     this.setState(state => ({ mobileOpen: !state.mobileOpen }));
   };
 
-  toggleMenuItemChildren = (path: string) => (event: React.MouseEvent) => {
-    this.setState(state => {
-      const newExpandedMenuItems = state.expandedMenuItems.includes(path)
-        ? state.expandedMenuItems.filter(p => p !== path)
-        : [...state.expandedMenuItems, path];
-      return { expandedMenuItems: newExpandedMenuItems };
-    });
-  };
-
-  getNavLink = (path: string, component: any, parentPath?: string) => (
-    props: any
-  ) => {
-    let to = "";
-    if (parentPath) {
-      to = parentPath;
-      to += path;
-    } else if (component.children) {
-      to = path;
-      to += Object.keys(component.children)[0];
-    } else {
-      to = path;
-    }
-    return <NavLink to={to} {...props} />;
-  };
-
   render() {
     const { classes, theme } = this.props;
-
-    const drawer = (
-      <List>
-        {Object.entries(ComponentRoutes).map(
-          ([path, component]: [string, any], index) => (
-            <React.Fragment key={path}>
-              <ListItem component={this.getNavLink(path, component)} button>
-                <ListItemIcon>
-                  <Icon component={component.icon} />
-                </ListItemIcon>
-                <ListItemText primary={component.label} />
-                {component.children && (
-                  <ListItemSecondaryAction>
-                    <IconButton onClick={this.toggleMenuItemChildren(path)}>
-                      {this.state.expandedMenuItems.includes(path) ? (
-                        <ExpandLess />
-                      ) : (
-                        <ExpandMore />
-                      )}
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                )}
-              </ListItem>
-              {component.children && (
-                <Collapse
-                  in={this.state.expandedMenuItems.includes(path)}
-                  timeout="auto"
-                  unmountOnExit
-                >
-                  <List component="span" disablePadding>
-                    {Object.entries(component.children).map(
-                      ([childPath, childComponent]: [string, any], index) => (
-                        <ListItem
-                          component={this.getNavLink(
-                            childPath,
-                            childComponent,
-                            path
-                          )}
-                          key={childPath}
-                          button
-                          className={classes.nested}
-                        >
-                          <ListItemText inset primary={childComponent.label} />
-                        </ListItem>
-                      )
-                    )}
-                  </List>
-                </Collapse>
-              )}
-              <Divider />
-            </React.Fragment>
-          )
-        )}
-      </List>
-    );
-
     return (
       <Router>
         <div className={classes.root}>
@@ -222,7 +125,7 @@ class App extends React.Component<AppProps, AppState> {
                   paper: classes.drawerPaperMobile
                 }}
               >
-                {drawer}
+                <LeftDrawerContent />
               </Drawer>
             </Hidden>
             <Hidden xsDown implementation="js">
@@ -233,25 +136,15 @@ class App extends React.Component<AppProps, AppState> {
                 variant="permanent"
                 open
               >
-                {drawer}
+                <LeftDrawerContent />
               </Drawer>
             </Hidden>
           </nav>
           <main className={classes.content}>
             <div className={classes.toolbar} />
             <Switch>
-              {Object.entries(ComponentRoutes).map(
-                ([path, component]: [string, any], index) =>
-                  Object.entries(component.children).map(
-                    ([childPath, childComponent]: [string, any], index) => (
-                      <Route
-                        exact
-                        path={path + childPath}
-                        component={childComponent.$ref || component.$ref}
-                      />
-                    )
-                  )
-              )}
+              <Route path="/orders/build" exact component={DummyComponent} />
+              <Route path="/orders/:tab?" component={OrderManagement} />
             </Switch>
           </main>
         </div>
