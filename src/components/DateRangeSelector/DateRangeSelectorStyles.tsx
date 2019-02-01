@@ -13,6 +13,7 @@ export default (theme: Theme) => {
     root: {
       padding: "2px 4px",
       border: "1px solid " + theme.palette.grey[300],
+      marginRight: theme.spacing.unit,
       backgroundColor: theme.palette.grey[200],
       transition: theme.transitions.create(
         ["box-shadow", "background-color", "border-color"],

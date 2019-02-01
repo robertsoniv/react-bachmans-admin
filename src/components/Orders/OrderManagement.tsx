@@ -6,7 +6,8 @@ import {
   createStyles,
   withStyles,
   Toolbar,
-  Paper
+  Paper,
+  Typography
 } from "@material-ui/core";
 
 import { RouteComponentProps } from "react-router";
@@ -15,6 +16,8 @@ import SearchField from "../SearchField/SearchField";
 
 import DateRangeSelector from "../DateRangeSelector/DateRangeSelector";
 import ButtonLink from "../Layout/ButtonLink";
+import { Meta } from "ordercloud-javascript-sdk";
+import { triggerAsyncId } from "async_hooks";
 
 interface OrderManagementParams {
   tab?: string;
@@ -30,6 +33,7 @@ interface OrderManagementState {
   search: string;
   from: string | null;
   to: string | null;
+  meta?: Meta;
 }
 
 const styles = (theme: Theme) =>
@@ -75,6 +79,10 @@ class OrderManagement extends React.Component<
     });
   };
 
+  public handleListUpdate = (meta?: Meta) => {
+    this.setState({ meta });
+  };
+
   public updateParamState = () => {
     const params = new URLSearchParams(this.props.location.search);
     const search: any = params.get("search");
@@ -116,7 +124,17 @@ class OrderManagement extends React.Component<
             onChange={this.handleParamUpdate}
             format={"YYYY-MM-DD HH:mm:ss zZZ"}
           />
-          <div className={classes.grow} />
+          {this.state.meta && this.state.meta.ItemRange ? (
+            <Typography
+              variant="body1"
+              align="center"
+              className={classes.grow}
+            >{`Showing ${this.state.meta.ItemRange[0]} - ${
+              this.state.meta.ItemRange[1]
+            } of ${this.state.meta.TotalCount}`}</Typography>
+          ) : (
+            <div className={classes.grow} />
+          )}
           <ButtonLink
             size="large"
             to="/orders/build"
@@ -139,6 +157,7 @@ class OrderManagement extends React.Component<
             <Tab label="Exceptions" value="exceptions" />
           </Tabs>
           <OrderList
+            onChange={this.handleListUpdate}
             tab={this.state.activeTab}
             search={this.state.search}
             from={this.state.from || undefined}

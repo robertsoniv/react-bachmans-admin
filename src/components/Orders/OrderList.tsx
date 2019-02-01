@@ -10,7 +10,7 @@ import {
   TableBody,
   Typography
 } from "@material-ui/core";
-import { ListOrder, Orders } from "ordercloud-javascript-sdk";
+import { ListOrder, Orders, Order, Meta } from "ordercloud-javascript-sdk";
 import React from "react";
 import moment from "moment-timezone";
 import Currency from "react-currency-formatter";
@@ -28,6 +28,7 @@ const styles = (theme: Theme) =>
   });
 
 interface OrderListProps {
+  onChange: (meta?: Meta) => void;
   classes: any;
   tab: string;
   search?: string;
@@ -46,7 +47,10 @@ const TAB_FILTERS_MAP: { [tabKey: string]: any } = {
   completed: { Status: "Completed" }
 };
 
-class OrderList extends React.Component<OrderListProps, ListOrder> {
+interface OrderListState {
+  list?: Order[];
+}
+class OrderList extends React.Component<OrderListProps, OrderListState> {
   componentDidMount = () => {
     this.retrieveList();
   };
@@ -72,7 +76,10 @@ class OrderList extends React.Component<OrderListProps, ListOrder> {
       to: to,
       filters: filters,
       ...DEFAULT_OPTIONS
-    }).then(data => this.setState({ ...data }));
+    }).then(data => {
+      this.setState({ list: data.Items });
+      this.props.onChange(data.Meta);
+    });
   };
 
   public getTabFilters = (tab: string) => {
@@ -81,10 +88,10 @@ class OrderList extends React.Component<OrderListProps, ListOrder> {
   public render() {
     if (this.state) {
       const { classes } = this.props;
-      const { Items, Meta } = this.state;
+      const { list } = this.state;
       return (
         <div className={classes.root}>
-          {Meta && Meta.ItemRange && (
+          {/* {Meta && Meta.ItemRange && (
             <Typography
               align="left"
               className={classes.metaData}
@@ -92,7 +99,7 @@ class OrderList extends React.Component<OrderListProps, ListOrder> {
             >{`Showing ${Meta.ItemRange[0]} - ${Meta.ItemRange[1]} of ${
               Meta.TotalCount
             }`}</Typography>
-          )}
+          )} */}
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
@@ -107,8 +114,8 @@ class OrderList extends React.Component<OrderListProps, ListOrder> {
               </TableRow>
             </TableHead>
             <TableBody>
-              {Items &&
-                Items.map(order => (
+              {list &&
+                list.map(order => (
                   <TableRow key={order.ID}>
                     <TableCell component="th" scope="row">
                       {order.ID}
