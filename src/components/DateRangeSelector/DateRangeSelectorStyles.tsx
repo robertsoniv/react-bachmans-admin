@@ -78,25 +78,32 @@ export default (theme: Theme) => {
         "&::-ms-input-placeholder": placeholder
       },
       "& .DateRangePicker_picker": {
-        left: `${-4}px !important`
+        left: `${-4}px !important`,
+        ...theme.typography.body1
       },
       "& .DayPicker__withBorder": {
         boxShadow: theme.shadows[2]
       },
+      "& .CalendarDay": {
+        ...theme.typography.body1
+      },
+      "& .CalendarDay__blocked_out_of_range": {
+        color: theme.palette.text.disabled
+      },
       "& .CalendarDay__hovered_span": {
         color: theme.palette.getContrastText(theme.palette.grey[200]),
         backgroundColor: theme.palette.grey[200],
-        borderColor: theme.palette.grey[300]
+        border: "1px double " + theme.palette.grey[300]
       },
       "& .CalendarDay__selected_span": {
         color: theme.palette.secondary.contrastText,
         backgroundColor: theme.palette.secondary.light,
-        borderColor: theme.palette.secondary.main
+        border: "1px double " + theme.palette.secondary.main
       },
       "& .CalendarDay__selected": {
         color: theme.palette.secondary.contrastText,
         backgroundColor: theme.palette.secondary.main,
-        border: "none"
+        border: "1px double " + theme.palette.secondary.dark
       }
     },
     iconButton: {

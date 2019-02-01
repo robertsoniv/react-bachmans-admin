@@ -1,27 +1,10 @@
 import React from "react";
 import { CookiesProvider } from "react-cookie";
 import ReactDOM from "react-dom";
-import { applyMiddleware, createStore } from "redux";
-import { createLogger } from "redux-logger";
-import thunk from "redux-thunk";
-import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { MuiThemeProvider } from "@material-ui/core";
 import BachmansTheme from "./constants/theme.constants";
-import { AppContext } from "./App.context";
-
-// import rootReducer from "./reducers";
-
-const middlewares: any[] = [];
-const logger = createLogger({});
-middlewares.push(thunk);
-
-if (process.env.NODE_ENV === "development") {
-  middlewares.push(logger);
-}
-
-// const store = createStore(rootReducer, applyMiddleware(...middlewares));
 
 ReactDOM.render(
   <CookiesProvider>
