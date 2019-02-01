@@ -2,7 +2,6 @@ import React from "react";
 import {
   IconButton,
   Theme,
-  createStyles,
   withStyles,
   Paper,
   ButtonBase,
@@ -23,136 +22,7 @@ import ClearIcon from "@material-ui/icons/Close";
 import NavNextIcon from "@material-ui/icons/NavigateNext";
 import NavPrevIcon from "@material-ui/icons/NavigateBefore";
 
-const styles = (theme: Theme) => {
-  var light = theme.palette.type === "light";
-  var placeholder = {
-    color: "currentColor",
-    opacity: light ? 0.42 : 0.5,
-    transition: theme.transitions.create("opacity", {
-      duration: theme.transitions.duration.shorter
-    })
-  };
-  return createStyles({
-    root: {
-      padding: "2px 4px",
-      "& .DateInput": {
-        ...theme.typography.body1,
-        flex: "1 0 auto",
-        width: 75
-      },
-
-      "& .DateRangePickerInput": {
-        display: "flex",
-        flexFlow: "row nowrap",
-        padding: 0,
-        alignItems: "center"
-      },
-      "& .DateRangePickerInput_clearDates": {
-        margin: 0,
-        padding: 0,
-        flex: 0,
-        position: "static",
-        top: "auto",
-        right: "auto",
-        transform: "none"
-      },
-      "& .DateRangePickerInput_calendarIcon": {
-        margin: 0,
-        padding: 0,
-        flex: 0
-      },
-      "& .DateInput_input": {
-        ...theme.typography.body1,
-        fontFamily: theme.typography.fontFamily,
-        color: theme.palette.text.primary,
-        fontSize: theme.typography.pxToRem(16),
-        lineHeight: "1.1875em",
-        // Reset (19px), match the native input line-height
-        display: "inline-flex",
-        alignItems: "center",
-        "&$disabled": {
-          color: theme.palette.text.disabled,
-          cursor: "default"
-        },
-        letterSpacing: "normal",
-        margin: 0,
-        border: 0,
-        padding: "6px 0 7px",
-        background: "transparent",
-        // Fix IE 11 width issue
-        "&::-webkit-input-placeholder": placeholder,
-        "&::-moz-placeholder": placeholder,
-        // Firefox 19+
-        "&:-ms-input-placeholder": placeholder,
-        // IE 11
-        "&::-ms-input-placeholder": placeholder
-      },
-      "& .DateRangePicker_picker": {
-        left: `${-4}px !important`
-      },
-      "& .DayPicker__withBorder": {
-        boxShadow: theme.shadows[2]
-      }
-    },
-    iconButton: {
-      padding: 10
-    },
-    customArrowIcon: {
-      fontSize: 16,
-      width: 44,
-      marginTop: theme.spacing.unit / 2,
-      color: "rgba(0,0,0,0.4)"
-    },
-    navPrevButton: {
-      position: "absolute",
-      left: theme.spacing.unit,
-      top: theme.spacing.unit
-    },
-    navNextButton: {
-      position: "absolute",
-      right: theme.spacing.unit,
-      top: theme.spacing.unit
-    },
-    monthText: {
-      fontWeight: theme.typography.fontWeightMedium
-    },
-    emptyCell: {
-      width: 39,
-      height: 39,
-      padding: 0,
-      border: "none"
-    },
-    dayButton: {
-      display: "table-cell",
-      flex: "none",
-      fontSize: 16,
-      width: 39,
-      height: 39,
-      padding: 0,
-      minWidth: 0
-    },
-    dayToday: {
-      border: "1px solid " + theme.palette.primary.light,
-      fontWeight: theme.typography.fontWeightMedium
-    },
-    dayDisabled: {
-      color: theme.palette.grey[500]
-    },
-    dayHover: {
-      backgroundColor: theme.palette.secondary.main
-    },
-    daySpanSelected: {
-      color: theme.palette.primary.contrastText,
-      backgroundColor: theme.palette.primary.light,
-      border: "none"
-    },
-    daySpanStartEnd: {
-      color: theme.palette.primary.contrastText,
-      backgroundColor: theme.palette.primary.main,
-      border: "none"
-    }
-  });
-};
+import styles from "./DateRangeSelectorStyles";
 
 interface DateRangeProps {
   startDate: Moment | null;
@@ -199,8 +69,8 @@ class DateRangeSelector extends React.Component<
 
   public handleDatesChange = ({ startDate, endDate }: DateRangeProps) => {
     this.props.onChange({
-      from: startDate ? startDate.format(this.props.format) : null,
-      to: endDate ? endDate.format(this.props.format) : null
+      from: startDate ? startDate.startOf("d").format(this.props.format) : null,
+      to: endDate ? endDate.endOf("d").format(this.props.format) : null
     });
   };
 
@@ -289,7 +159,7 @@ class DateRangeSelector extends React.Component<
     const { classes, theme } = this.props;
     return (
       this.state && (
-        <Paper className={classes.root} elevation={1}>
+        <Paper className={classes.root} elevation={0}>
           <DateRangePicker
             verticalSpacing={6}
             horizontalMargin={theme.spacing.unit * 2}

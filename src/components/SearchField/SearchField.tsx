@@ -13,6 +13,7 @@ import ClearIcon from "@material-ui/icons/Close";
 
 interface SearchFieldProps {
   onSearch: (newParams: Object) => void;
+  placeholder?: string;
   value: string;
   classes: any;
 }
@@ -20,17 +21,31 @@ interface SearchFieldProps {
 const styles = (theme: Theme) =>
   createStyles({
     root: {
+      border: "1px solid " + theme.palette.grey[300],
+      backgroundColor: theme.palette.grey[200],
       padding: "2px 4px",
       maxWidth: 500,
-      marginRight: theme.spacing.unit * 2,
+      marginRight: theme.spacing.unit,
       display: "flex",
-      alignItems: "center"
+      alignItems: "center",
+      transition: theme.transitions.create(
+        ["box-shadow", "background-color", "border-color"],
+        {
+          duration: theme.transitions.duration.short,
+          easing: theme.transitions.easing.sharp
+        }
+      ),
+      "&:focus-within": {
+        borderColor: "transparent",
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[3]
+      }
     },
     input: {
       flexGrow: 1
     },
     iconButton: {
-      padding: 10
+      padding: theme.spacing.unit
     }
   });
 
@@ -67,11 +82,11 @@ class SearchField extends React.Component<
   };
 
   public render() {
-    const { classes } = this.props;
+    const { classes, placeholder } = this.props;
     return (
       this.state && (
         <form onSubmit={this.handleSearch}>
-          <Paper className={classes.root} elevation={1}>
+          <Paper className={classes.root} elevation={0}>
             <IconButton
               type="submit"
               color="primary"
@@ -82,11 +97,11 @@ class SearchField extends React.Component<
             </IconButton>
             <InputBase
               className={classes.input}
-              placeholder="Search"
+              placeholder={placeholder || "Search"}
               onChange={this.onChange}
               value={this.state.searchTerm}
             />
-            {this.state.searchTerm && (
+            {this.props.value && (
               <IconButton
                 onClick={this.handleClear}
                 className={classes.iconButton}

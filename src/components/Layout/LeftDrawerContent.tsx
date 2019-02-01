@@ -1,34 +1,34 @@
-import React from "react";
 import { List } from "@material-ui/core";
-import ListItemNavLink from "./ListItemNavLink";
-
-import OrdersIcon from "@material-ui/icons/ReceiptOutlined";
-import OrdersIconActive from "@material-ui/icons/ReceiptTwoTone";
-
-import CustomersIcon from "@material-ui/icons/PeopleOutlined";
-import CustomersIconActive from "@material-ui/icons/PeopleTwoTone";
-
 import CategoriesIcon from "@material-ui/icons/CategoryOutlined";
 import CategoriesIconActive from "@material-ui/icons/CategoryTwoTone";
-
-import ProductsIcon from "@material-ui/icons/LocalFloristOutlined";
-import ProductsIconActive from "@material-ui/icons/LocalFloristTwoTone";
-
 import EventsIcon from "@material-ui/icons/EventOutlined";
 import EventsIconActive from "@material-ui/icons/EventTwoTone";
-
+import ProductsIcon from "@material-ui/icons/LocalFloristOutlined";
+import ProductsIconActive from "@material-ui/icons/LocalFloristTwoTone";
 import DeliveryIcon from "@material-ui/icons/LocalShippingOutlined";
 import DeliveryIconActive from "@material-ui/icons/LocalShippingTwoTone";
-
-import MiscellaneousIcon from "@material-ui/icons/SettingsOutlined";
-import MiscellaneousIconActive from "@material-ui/icons/SettingsTwoTone";
-
 import SettingsIcon from "@material-ui/icons/LockOutlined";
 import SettingsIconActive from "@material-ui/icons/LockTwoTone";
+import CustomersIcon from "@material-ui/icons/PeopleOutlined";
+import CustomersIconActive from "@material-ui/icons/PeopleTwoTone";
+import OrdersIcon from "@material-ui/icons/ReceiptOutlined";
+import OrdersIconActive from "@material-ui/icons/ReceiptTwoTone";
+import MiscellaneousIcon from "@material-ui/icons/SettingsOutlined";
+import MiscellaneousIconActive from "@material-ui/icons/SettingsTwoTone";
+import ProfileIcon from "@material-ui/icons/AccountCircleOutlined";
+import ProfileIconActive from "@material-ui/icons/AccountCircleTwoTone";
+import React from "react";
+import ListItemNavLink from "./ListItemNavLink";
 
 const LeftDrawerContent: React.FunctionComponent = () => {
   return (
     <List>
+      <ListItemNavLink
+        to="/profile"
+        primary="My Profile"
+        icon={<ProfileIcon />}
+        activeIcon={<ProfileIconActive />}
+      />
       <ListItemNavLink
         to="/orders"
         primary="Orders"

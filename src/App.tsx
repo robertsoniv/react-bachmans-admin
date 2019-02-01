@@ -1,156 +1,128 @@
-import React from "react";
 import {
-  AppBar,
   createStyles,
   CssBaseline,
-  Drawer,
-  Hidden,
-  IconButton,
   Theme,
-  Toolbar,
-  Typography,
-  withStyles
+  withStyles,
+  Typography
 } from "@material-ui/core";
-
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import NotificationIcon from "@material-ui/icons/Notifications";
-import MenuIcon from "@material-ui/icons/Menu";
-
-import LeftDrawerContent from "./LeftDrawer/LeftDrawerContent";
-import OrderManagement from "./Orders/OrderManagement";
-import DummyComponent from "./DummyComponent";
-
-const drawerWidth = 300;
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { AppContext, AppContextShape } from "./App.context";
+import LeftDrawer from "./components/Layout/LeftDrawer";
+import AppHeader from "./components/Layout/AppHeader";
+import MainContent from "./components/Layout/MainContent";
+import Login, { LoginState } from "./components/Login/Login";
+import { withCookies, ReactCookieProps } from "react-cookie";
+import { client_id, scope } from "./constants/app.constants";
+import OrderCloud from "ordercloud-javascript-sdk";
+import { ContentTextFormat } from "material-ui/svg-icons";
 
 const styles = (theme: Theme) =>
   createStyles({
     root: {
+      height: "100vh",
+      width: "100vw",
+      overflowX: "hidden",
       display: "flex"
-    },
-    drawer: {
-      [theme.breakpoints.up("sm")]: {
-        width: drawerWidth,
-        flexShrink: 0
-      }
-    },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1
-    },
-    grow: {
-      flexGrow: 1
-    },
-    menuButton: {
-      marginRight: 20,
-      [theme.breakpoints.up("sm")]: {
-        display: "none"
-      }
-    },
-    toolbar: theme.mixins.toolbar,
-    drawerPaper: {
-      top: theme.spacing.unit * 8,
-      height: "calc(100% - " + theme.spacing.unit * 8 + "px)",
-      width: drawerWidth
-    },
-    drawerPaperMobile: {
-      width: drawerWidth
-    },
-    content: {
-      flexGrow: 1
-    },
-    nested: {
-      paddingTop: theme.spacing.unit,
-      "&:not(:last-of-type)": {
-        paddingBottom: theme.spacing.unit
-      }
     }
   });
 
-interface AppProps {
+interface AppProps extends ReactCookieProps {
   classes: any;
-  theme: any;
 }
 
 interface AppState {
   mobileOpen: boolean;
+  context: AppContextShape;
 }
 
 class App extends React.Component<AppProps, AppState> {
-  state = {
-    mobileOpen: false
+  componentDidMount = () => {
+    const { cookies } = this.props;
+    if (cookies) {
+      this.intializeOrderCloud(cookies.get("token"));
+    } else {
+      this.setInitialState();
+    }
   };
 
   handleDrawerToggle = () => {
-    this.setState(state => ({ mobileOpen: !state.mobileOpen }));
+    this.setState(state => {
+      !state.mobileOpen;
+    });
+  };
+
+  handleLogin = (auth: OrderCloud.AccessToken) => {
+    if (auth.access_token) {
+      const { cookies } = this.props;
+      if (cookies) {
+        cookies.set("token", auth.access_token);
+      }
+      this.intializeOrderCloud(auth.access_token);
+    }
+  };
+
+  setInitialState = () => {
+    this.setState({ mobileOpen: false, context: {} });
+  };
+
+  intializeOrderCloud = (token?: string) => {
+    if (!token) return this.setInitialState();
+    this.setState({
+      context: {
+        token: token
+      }
+    });
+    OrderCloud.Sdk.instance.authentications["oauth2"].accessToken = token;
+    return OrderCloud.Me.Get().then(user => {
+      return OrderCloud.Me.ListUserGroups({ pageSize: 100 }).then(
+        listUserGroups => {
+          this.setState(state => {
+            return {
+              ...state,
+              context: {
+                token: token,
+                user: user,
+                groups: listUserGroups.Items
+              }
+            };
+          });
+        }
+      );
+    });
   };
 
   render() {
-    const { classes, theme } = this.props;
+    const { classes } = this.props;
     return (
-      <Router>
-        <div className={classes.root}>
-          <CssBaseline />
-          <AppBar position="fixed" className={classes.appBar}>
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                aria-label="Open drawer"
-                onClick={this.handleDrawerToggle}
-                className={classes.menuButton}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" color="inherit" noWrap>
-                Bachman's Admin
-              </Typography>
-              <div className={classes.grow} />
-              <IconButton color="inherit">
-                <NotificationIcon />
-              </IconButton>
-              <IconButton color="inherit">
-                <AccountCircleIcon />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-          <nav className={classes.drawer}>
-            {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-            <Hidden smUp implementation="js">
-              <Drawer
-                variant="temporary"
-                anchor={theme.direction === "rtl" ? "right" : "left"}
-                open={this.state.mobileOpen}
-                onClose={this.handleDrawerToggle}
-                classes={{
-                  paper: classes.drawerPaperMobile
-                }}
-              >
-                <LeftDrawerContent />
-              </Drawer>
-            </Hidden>
-            <Hidden xsDown implementation="js">
-              <Drawer
-                classes={{
-                  paper: classes.drawerPaper
-                }}
-                variant="permanent"
-                open
-              >
-                <LeftDrawerContent />
-              </Drawer>
-            </Hidden>
-          </nav>
-          <main className={classes.content}>
-            <div className={classes.toolbar} />
-            <Switch>
-              <Route path="/orders/build" exact component={DummyComponent} />
-              <Route path="/orders/:tab?" component={OrderManagement} />
-            </Switch>
-          </main>
-        </div>
-      </Router>
+      <div className={classes.root}>
+        <CssBaseline />
+        <Router>
+          {this.state ? (
+            this.state.context &&
+            OrderCloud.Sdk.instance.authentications["oauth2"].accessToken ? (
+              <AppContext.Provider value={this.state.context}>
+                <AppHeader onDrawerToggle={this.handleDrawerToggle} />
+                <LeftDrawer
+                  mobileOpen={this.state.mobileOpen}
+                  onToggle={this.handleDrawerToggle}
+                />
+                <MainContent />
+              </AppContext.Provider>
+            ) : (
+              <Login
+                onSubmit={this.handleLogin}
+                clientId={client_id}
+                scope={scope}
+              />
+            )
+          ) : (
+            <Typography variant="h1">Loading</Typography>
+          )}
+        </Router>
+      </div>
     );
   }
 }
 
-export default withStyles(styles, { withTheme: true })(App);
+export default withCookies(withStyles(styles)(App));
