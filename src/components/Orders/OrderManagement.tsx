@@ -41,8 +41,14 @@ const styles = (theme: Theme) =>
     toolbar: {
       marginTop: theme.spacing.unit * 2
     },
-    tabs: {
-      borderBottom: "1px solid " + theme.palette.grey[300]
+    tabs: {},
+    paperHeader: {
+      borderBottom: "1px solid " + theme.palette.grey[300],
+      display: "flex",
+      alignItems: "center"
+    },
+    meta: {
+      marginRight: theme.spacing.unit * 3
     },
     paper: {
       margin: `${theme.spacing.unit * 1}px ${theme.spacing.unit * 3}px ${theme
@@ -124,17 +130,8 @@ class OrderManagement extends React.Component<
             onChange={this.handleParamUpdate}
             format={"YYYY-MM-DD HH:mm:ss zZZ"}
           />
-          {this.state.meta && this.state.meta.ItemRange ? (
-            <Typography
-              variant="body1"
-              align="center"
-              className={classes.grow}
-            >{`Showing ${this.state.meta.ItemRange[0]} - ${
-              this.state.meta.ItemRange[1]
-            } of ${this.state.meta.TotalCount}`}</Typography>
-          ) : (
-            <div className={classes.grow} />
-          )}
+
+          <div className={classes.grow} />
           <ButtonLink
             size="large"
             to="/orders/build"
@@ -145,17 +142,31 @@ class OrderManagement extends React.Component<
           </ButtonLink>
         </Toolbar>
         <Paper className={classes.paper}>
-          <Tabs
-            className={classes.tabs}
-            value={this.state.activeTab}
-            indicatorColor="primary"
-            onChange={this.handleTabchange}
-          >
-            <Tab label="All Orders" value="all" />
-            <Tab label="Processing" value="processing" />
-            <Tab label="Completed" value="completed" />
-            <Tab label="Exceptions" value="exceptions" />
-          </Tabs>
+          <div className={classes.paperHeader}>
+            <Tabs
+              className={classes.tabs}
+              value={this.state.activeTab}
+              indicatorColor="primary"
+              onChange={this.handleTabchange}
+            >
+              <Tab label="All Orders" value="all" />
+              <Tab label="Processing" value="processing" />
+              <Tab label="Completed" value="completed" />
+              <Tab label="Exceptions" value="exceptions" />
+            </Tabs>
+            <div className={classes.grow} />
+            {this.state.meta && this.state.meta.ItemRange ? (
+              <Typography
+                variant="body1"
+                align="center"
+                className={classes.meta}
+              >{`Showing ${this.state.meta.ItemRange[0]} - ${
+                this.state.meta.ItemRange[1]
+              } of ${this.state.meta.TotalCount}`}</Typography>
+            ) : (
+              <div className={classes.grow} />
+            )}
+          </div>
           <OrderList
             onChange={this.handleListUpdate}
             tab={this.state.activeTab}

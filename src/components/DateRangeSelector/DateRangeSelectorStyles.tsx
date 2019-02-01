@@ -82,6 +82,21 @@ export default (theme: Theme) => {
       },
       "& .DayPicker__withBorder": {
         boxShadow: theme.shadows[2]
+      },
+      "& .CalendarDay__hovered_span": {
+        color: theme.palette.getContrastText(theme.palette.grey[200]),
+        backgroundColor: theme.palette.grey[200],
+        borderColor: theme.palette.grey[300]
+      },
+      "& .CalendarDay__selected_span": {
+        color: theme.palette.secondary.contrastText,
+        backgroundColor: theme.palette.secondary.light,
+        borderColor: theme.palette.secondary.main
+      },
+      "& .CalendarDay__selected": {
+        color: theme.palette.secondary.contrastText,
+        backgroundColor: theme.palette.secondary.main,
+        border: "none"
       }
     },
     iconButton: {
@@ -105,41 +120,6 @@ export default (theme: Theme) => {
     },
     monthText: {
       fontWeight: theme.typography.fontWeightMedium
-    },
-    emptyCell: {
-      width: 39,
-      height: 39,
-      padding: 1,
-      border: "none"
-    },
-    dayButton: {
-      display: "table-cell",
-      flex: "none",
-      fontSize: 16,
-      width: 39,
-      height: 39,
-      padding: 1,
-      minWidth: 0
-    },
-    dayToday: {
-      border: "1px solid " + theme.palette.secondary.light,
-      fontWeight: theme.typography.fontWeightMedium
-    },
-    dayDisabled: {
-      color: theme.palette.grey[500]
-    },
-    dayHover: {
-      backgroundColor: theme.palette.grey[200]
-    },
-    daySpanSelected: {
-      color: theme.palette.secondary.contrastText,
-      backgroundColor: theme.palette.secondary.light,
-      border: "none"
-    },
-    daySpanStartEnd: {
-      color: theme.palette.secondary.contrastText,
-      backgroundColor: theme.palette.secondary.main,
-      border: "none"
     }
   });
 };

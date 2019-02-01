@@ -4,8 +4,6 @@ import {
   Theme,
   withStyles,
   Paper,
-  ButtonBase,
-  TableCell,
   Typography
 } from "@material-ui/core";
 
@@ -14,7 +12,6 @@ import "react-dates/lib/css/_datepicker.css";
 
 import { DateRangePicker } from "react-dates";
 import moment, { Moment } from "moment";
-import classNames from "classnames";
 
 import CalendarIcon from "@material-ui/icons/EventNoteOutlined";
 import ArrowRightIcon from "@material-ui/icons/ArrowForward";
@@ -96,52 +93,6 @@ class DateRangeSelector extends React.Component<
     );
   };
 
-  public onKeyDown = (day: any) => (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      day.onDayClick(day.day, event);
-    }
-  };
-
-  public renderCalendarDay = (day: any) => {
-    const { classes } = this.props;
-    const dayClasses: any = {
-      [classes.dayButton]: true
-    };
-    if (day && day.modifiers) {
-      dayClasses[classes.dayToday] = day.modifiers.has("today");
-      dayClasses[classes.dayDisabled] = day.modifiers.has("blocked");
-      dayClasses[classes.dayHover] =
-        day.modifiers.has("hovered-span") || day.modifiers.has("hovered");
-      dayClasses[classes.daySpanSelected] = day.modifiers.has("selected-span");
-      dayClasses[classes.daySpanStartEnd] =
-        day.modifiers.has("selected-start") ||
-        day.modifiers.has("selected-end");
-    }
-
-    return day && day.day ? (
-      <ButtonBase
-        disabled={day.modifiers && day.modifiers.has("blocked")}
-        onClick={() => day.onDayClick(day.day)}
-        onMouseEnter={() => day.onDayMouseEnter(day.day)}
-        onMouseLeave={() => day.onDayMouseLeave(day.day)}
-        onKeyDown={this.onKeyDown(day)}
-        onMouseUp={this.onMouseUp}
-        component="td"
-        tabIndex={-1}
-        className={classNames(dayClasses)}
-        key={day.key}
-      >
-        {day.renderDayContents(day.day)}
-      </ButtonBase>
-    ) : (
-      <TableCell className={classes.emptyCell} key={day.key} />
-    );
-  };
-
-  public renderDayContents = (day: Moment) => {
-    return day.date().toString();
-  };
-
   public onFocusChange = (focusedInput: any) => {
     this.setState({ focusedInput });
   };
@@ -172,8 +123,6 @@ class DateRangeSelector extends React.Component<
             onFocusChange={this.onFocusChange}
             startDate={this.state.startDate}
             endDate={this.state.endDate}
-            renderCalendarDay={this.renderCalendarDay}
-            renderDayContents={this.renderDayContents}
             renderMonthText={this.renderMonthText}
             startDatePlaceholderText="From Date"
             endDatePlaceholderText="To Date"

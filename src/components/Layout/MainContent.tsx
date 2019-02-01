@@ -19,7 +19,7 @@ interface MainContentProps {
   classes: any;
 }
 
-class App extends React.Component<MainContentProps> {
+class MainContent extends React.Component<MainContentProps> {
   render() {
     const { classes } = this.props;
     return (
@@ -42,4 +42,4 @@ class App extends React.Component<MainContentProps> {
   }
 }
 
-export default withStyles(styles)(App);
+export default withStyles(styles)(MainContent);

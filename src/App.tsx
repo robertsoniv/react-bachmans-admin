@@ -2,21 +2,20 @@ import {
   createStyles,
   CssBaseline,
   Theme,
-  withStyles,
-  Typography
+  Typography,
+  withStyles
 } from "@material-ui/core";
 import React from "react";
+import { ReactCookieProps, withCookies } from "react-cookie";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AppContext, AppContextShape } from "./App.context";
-import LeftDrawer from "./components/Layout/LeftDrawer";
 import AppHeader from "./components/Layout/AppHeader";
+import LeftDrawer from "./components/Layout/LeftDrawer";
 import MainContent from "./components/Layout/MainContent";
-import Login, { LoginState } from "./components/Login/Login";
-import { withCookies, ReactCookieProps } from "react-cookie";
+import Login from "./components/Login/Login";
 import { client_id, scope } from "./constants/app.constants";
 import OrderCloud from "ordercloud-javascript-sdk";
-import { ContentTextFormat } from "material-ui/svg-icons";
-import * as jwtDecode from 'jwt-decode';
+import jwtDecode from "jwt-decode";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -38,13 +37,13 @@ interface AppState {
 }
 
 function isTokenValid(token?: string): boolean {
-  if(!token) {
+  if (!token) {
     return false;
   }
-  let decodedToken;
+  let decodedToken: any;
   try {
     decodedToken = jwtDecode(token);
-  } catch(e) {
+  } catch (e) {
     return false;
   }
   const expirationSeconds = decodedToken.exp;
@@ -56,8 +55,8 @@ function isTokenValid(token?: string): boolean {
 class App extends React.Component<AppProps, AppState> {
   componentDidMount = () => {
     const { cookies } = this.props;
-    if (cookies && isTokenValid(cookies.get('token'))) {
-      this.intializeOrderCloud(cookies.get('token'));
+    if (cookies && isTokenValid(cookies.get("token"))) {
+      this.intializeOrderCloud(cookies.get("token"));
     } else {
       this.setInitialState();
     }
@@ -92,7 +91,9 @@ class App extends React.Component<AppProps, AppState> {
     OrderCloud.Sdk.instance.authentications["oauth2"].accessToken = token;
     try {
       const user = await OrderCloud.Me.Get();
-      const listUserGroups = await OrderCloud.Me.ListUserGroups({pageSize: 100});
+      const listUserGroups = await OrderCloud.Me.ListUserGroups({
+        pageSize: 100
+      });
       this.setState(state => {
         return {
           ...state,
@@ -101,9 +102,9 @@ class App extends React.Component<AppProps, AppState> {
             user,
             groups: listUserGroups.Items
           }
-        }
-      })
-    } catch(e) {
+        };
+      });
+    } catch (e) {
       this.setInitialState();
     }
   };
