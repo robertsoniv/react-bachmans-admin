@@ -16,6 +16,7 @@ import { withCookies, ReactCookieProps } from "react-cookie";
 import { client_id, scope } from "./constants/app.constants";
 import OrderCloud from "ordercloud-javascript-sdk";
 import { ContentTextFormat } from "material-ui/svg-icons";
+import * as jwtDecode from 'jwt-decode';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -36,11 +37,27 @@ interface AppState {
   context: AppContextShape;
 }
 
+function isTokenValid(token?: string): boolean {
+  if(!token) {
+    return false;
+  }
+  let decodedToken;
+  try {
+    decodedToken = jwtDecode(token);
+  } catch(e) {
+    return false;
+  }
+  const expirationSeconds = decodedToken.exp;
+  const expirationWithPadding = expirationSeconds - 30; // accounts for time during transmission
+  const currentSeconds = Date.now() / 1000;
+  return expirationWithPadding > currentSeconds;
+}
+
 class App extends React.Component<AppProps, AppState> {
   componentDidMount = () => {
     const { cookies } = this.props;
-    if (cookies) {
-      this.intializeOrderCloud(cookies.get("token"));
+    if (cookies && isTokenValid(cookies.get('token'))) {
+      this.intializeOrderCloud(cookies.get('token'));
     } else {
       this.setInitialState();
     }
@@ -66,30 +83,29 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({ mobileOpen: false, context: {} });
   };
 
-  intializeOrderCloud = (token?: string) => {
-    if (!token) return this.setInitialState();
+  intializeOrderCloud = async (token: string) => {
     this.setState({
       context: {
         token: token
       }
     });
     OrderCloud.Sdk.instance.authentications["oauth2"].accessToken = token;
-    return OrderCloud.Me.Get().then(user => {
-      return OrderCloud.Me.ListUserGroups({ pageSize: 100 }).then(
-        listUserGroups => {
-          this.setState(state => {
-            return {
-              ...state,
-              context: {
-                token: token,
-                user: user,
-                groups: listUserGroups.Items
-              }
-            };
-          });
+    try {
+      const user = await OrderCloud.Me.Get();
+      const listUserGroups = await OrderCloud.Me.ListUserGroups({pageSize: 100});
+      this.setState(state => {
+        return {
+          ...state,
+          context: {
+            token,
+            user,
+            groups: listUserGroups.Items
+          }
         }
-      );
-    });
+      })
+    } catch(e) {
+      this.setInitialState();
+    }
   };
 
   render() {
