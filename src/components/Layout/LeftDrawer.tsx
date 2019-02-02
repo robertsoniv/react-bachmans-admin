@@ -3,7 +3,9 @@ import {
   Drawer,
   Hidden,
   Theme,
-  withStyles
+  withStyles,
+  Fade,
+  Slide
 } from "@material-ui/core";
 import React from "react";
 import LeftDrawerContent from "./LeftDrawerContent";
@@ -34,7 +36,14 @@ interface LeftDrawerProps {
   onToggle: () => void;
 }
 
-class LeftDrawer extends React.Component<LeftDrawerProps> {
+interface LeftDrawerState {
+  show: boolean;
+}
+
+class LeftDrawer extends React.Component<LeftDrawerProps, LeftDrawerState> {
+  componentDidMount = () => {
+    this.setState({ show: true });
+  };
   render() {
     const { classes } = this.props;
     return (

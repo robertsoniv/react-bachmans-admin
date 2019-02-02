@@ -68,11 +68,14 @@ class App extends React.Component<AppProps, AppState> {
     });
   };
 
-  handleLogin = (auth: OrderCloud.AccessToken) => {
+  handleLogin = (auth: OrderCloud.AccessToken, remember: boolean) => {
     if (auth.access_token) {
       const { cookies } = this.props;
       if (cookies) {
         cookies.set("token", auth.access_token);
+        if (remember) {
+          cookies.set("refresh_token", auth.refresh_token);
+        }
       }
       this.intializeOrderCloud(auth.access_token);
     }
@@ -109,6 +112,15 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
+  public handleLogout = () => {
+    const { cookies } = this.props;
+    if (cookies) {
+      cookies.remove("token");
+    }
+    delete OrderCloud.Sdk.instance.authentications["oauth2"].accessToken;
+    this.setInitialState();
+  };
+
   render() {
     const { classes } = this.props;
     return (
@@ -119,7 +131,10 @@ class App extends React.Component<AppProps, AppState> {
             this.state.context &&
             OrderCloud.Sdk.instance.authentications["oauth2"].accessToken ? (
               <AppContext.Provider value={this.state.context}>
-                <AppHeader onDrawerToggle={this.handleDrawerToggle} />
+                <AppHeader
+                  onLogout={this.handleLogout}
+                  onDrawerToggle={this.handleDrawerToggle}
+                />
                 <LeftDrawer
                   mobileOpen={this.state.mobileOpen}
                   onToggle={this.handleDrawerToggle}

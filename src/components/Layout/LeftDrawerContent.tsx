@@ -1,4 +1,4 @@
-import { List } from "@material-ui/core";
+import { List, Slide } from "@material-ui/core";
 import CategoriesIcon from "@material-ui/icons/CategoryOutlined";
 import CategoriesIconActive from "@material-ui/icons/CategoryTwoTone";
 import EventsIcon from "@material-ui/icons/EventOutlined";
@@ -22,62 +22,64 @@ import ListItemNavLink from "./ListItemNavLink";
 
 const LeftDrawerContent: React.FunctionComponent = () => {
   return (
-    <List>
-      <ListItemNavLink
-        to="/profile"
-        primary="My Profile"
-        icon={<ProfileIcon />}
-        activeIcon={<ProfileIconActive />}
-      />
-      <ListItemNavLink
-        to="/orders"
-        primary="Orders"
-        icon={<OrdersIcon />}
-        activeIcon={<OrdersIconActive />}
-      />
-      <ListItemNavLink
-        to="/customers"
-        primary="Customers"
-        icon={<CustomersIcon />}
-        activeIcon={<CustomersIconActive />}
-      />
-      <ListItemNavLink
-        to="/categories"
-        primary="Categories"
-        icon={<CategoriesIcon />}
-        activeIcon={<CategoriesIconActive />}
-      />
-      <ListItemNavLink
-        to="/products"
-        primary="Products"
-        icon={<ProductsIcon />}
-        activeIcon={<ProductsIconActive />}
-      />
-      <ListItemNavLink
-        to="/events"
-        primary="Events"
-        icon={<EventsIcon />}
-        activeIcon={<EventsIconActive />}
-      />
-      <ListItemNavLink
-        to="/delivery"
-        primary="Delivery"
-        icon={<DeliveryIcon />}
-        activeIcon={<DeliveryIconActive />}
-      />
-      <ListItemNavLink
-        to="/miscellaneous"
-        primary="Miscellaneous"
-        icon={<MiscellaneousIcon />}
-        activeIcon={<MiscellaneousIconActive />}
-      />
-      <ListItemNavLink
-        to="/admin"
-        primary="Admin Tools"
-        icon={<SettingsIcon />}
-        activeIcon={<SettingsIconActive />}
-      />
-    </List>
+    <Slide direction="right" in={true}>
+      <List>
+        <ListItemNavLink
+          to="/profile"
+          primary="My Profile"
+          icon={<ProfileIcon />}
+          activeIcon={<ProfileIconActive />}
+        />
+        <ListItemNavLink
+          to="/orders"
+          primary="Orders"
+          icon={<OrdersIcon />}
+          activeIcon={<OrdersIconActive />}
+        />
+        <ListItemNavLink
+          to="/customers"
+          primary="Customers"
+          icon={<CustomersIcon />}
+          activeIcon={<CustomersIconActive />}
+        />
+        <ListItemNavLink
+          to="/categories"
+          primary="Categories"
+          icon={<CategoriesIcon />}
+          activeIcon={<CategoriesIconActive />}
+        />
+        <ListItemNavLink
+          to="/products"
+          primary="Products"
+          icon={<ProductsIcon />}
+          activeIcon={<ProductsIconActive />}
+        />
+        <ListItemNavLink
+          to="/events"
+          primary="Events"
+          icon={<EventsIcon />}
+          activeIcon={<EventsIconActive />}
+        />
+        <ListItemNavLink
+          to="/delivery"
+          primary="Delivery"
+          icon={<DeliveryIcon />}
+          activeIcon={<DeliveryIconActive />}
+        />
+        <ListItemNavLink
+          to="/miscellaneous"
+          primary="Miscellaneous"
+          icon={<MiscellaneousIcon />}
+          activeIcon={<MiscellaneousIconActive />}
+        />
+        <ListItemNavLink
+          to="/admin"
+          primary="Admin Tools"
+          icon={<SettingsIcon />}
+          activeIcon={<SettingsIconActive />}
+        />
+      </List>
+    </Slide>
   );
 };
 

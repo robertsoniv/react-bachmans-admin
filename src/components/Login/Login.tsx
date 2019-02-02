@@ -10,7 +10,9 @@ import {
   Tooltip,
   Typography,
   withStyles,
-  Snackbar
+  Snackbar,
+  Zoom,
+  Fade
 } from "@material-ui/core";
 
 import { Visibility, VisibilityOff, Close } from "@material-ui/icons";
@@ -23,7 +25,7 @@ interface LoginProps {
   scope: ApiRole[];
   clientId: string;
   classes: any;
-  onSubmit: (auth: AccessToken) => void;
+  onSubmit: (auth: AccessToken, remember: boolean) => void;
 }
 
 export interface LoginState {
@@ -33,6 +35,8 @@ export interface LoginState {
   showPassword: boolean;
   error: string | null;
   showError: boolean;
+  show: boolean;
+  showForm: boolean;
 }
 
 class Login extends Component<LoginProps, LoginState> {
@@ -42,6 +46,8 @@ class Login extends Component<LoginProps, LoginState> {
     remember: false,
     showPassword: false,
     showError: false,
+    showForm: true,
+    show: true,
     error: null
   };
 
@@ -62,8 +68,9 @@ class Login extends Component<LoginProps, LoginState> {
     event.preventDefault();
     const { clientId, scope } = this.props;
     const { username, password, remember } = this.state;
+    this.setState({ showForm: false });
     Auth.Login(username, password, clientId, scope)
-      .then(this.props.onSubmit)
+      .then(user => this.props.onSubmit(user, remember))
       .catch(this.handleError);
   };
 
@@ -75,6 +82,8 @@ class Login extends Component<LoginProps, LoginState> {
     response: { body: { error_description: string } };
   }) => {
     this.setState({
+      show: true,
+      showForm: true,
       showError: true,
       error: error.response.body.error_description
     });
@@ -83,20 +92,11 @@ class Login extends Component<LoginProps, LoginState> {
   public render() {
     const { classes } = this.props;
     return (
-      <div className={classes.root}>
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          open={this.state.showError}
-          onClose={this.handleCloseError}
-          message={
-            <span id="login-error-message">
-              {(this.state && this.state.error && `${this.state.error}`) ||
-                "An Error Occured"}
-            </span>
-          }
-        >
-          <Alert
-            variant="error"
+      <Fade in={this.state && this.state.show}>
+        <div className={classes.root}>
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={this.state.showError}
             onClose={this.handleCloseError}
             message={
               <span id="login-error-message">
@@ -104,76 +104,89 @@ class Login extends Component<LoginProps, LoginState> {
                   "An Error Occured"}
               </span>
             }
-          />
-        </Snackbar>
-        <form onSubmit={this.handleSubmit} className={classes.form}>
-          <img
-            className={classes.logo}
-            src="/logo_purple.png"
-            alt="OrderCloud.io"
-          />
-          <Typography variant="subtitle1" color="default" gutterBottom>
-            Commerce Admin
-          </Typography>
-          <TextField
-            className={classes.textFields}
-            type="text"
-            label="Username"
-            value={this.state.username}
-            onChange={this.handleInputChangeFor("username")}
-          />
-          <TextField
-            className={classes.textFields}
-            type={this.state.showPassword ? "text" : "password"}
-            label="Password"
-            value={this.state.password}
-            onChange={this.handleInputChangeFor("password")}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment variant="filled" position="end">
-                  <Tooltip
-                    title={
-                      this.state.showPassword
-                        ? "Hide password"
-                        : "Show password"
-                    }
-                  >
-                    <IconButton
-                      aria-label="Toggle password visibility"
-                      onClick={this.handleClickShowPassword}
-                    >
-                      {this.state.showPassword ? (
-                        <Visibility />
-                      ) : (
-                        <VisibilityOff />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                </InputAdornment>
-              )
-            }}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={this.state.remember}
-                onChange={this.handleInputChangeFor("remember")}
-                value="remember"
-              />
-            }
-            label="Keep me logged in"
-          />
-          <Button
-            className={classes.loginButton}
-            variant="contained"
-            color="primary"
-            size="large"
-            type="submit"
           >
-            Login
-          </Button>
-        </form>
-      </div>
+            <Alert
+              variant="error"
+              onClose={this.handleCloseError}
+              message={
+                <span id="login-error-message">
+                  {(this.state && this.state.error && `${this.state.error}`) ||
+                    "An Error Occured"}
+                </span>
+              }
+            />
+          </Snackbar>
+          <Zoom in={this.state.showForm}>
+            <form onSubmit={this.handleSubmit} className={classes.form}>
+              <img
+                className={classes.logo}
+                src="/logo_purple.png"
+                alt="OrderCloud.io"
+              />
+              <Typography variant="subtitle1" color="default" gutterBottom>
+                Commerce Admin
+              </Typography>
+              <TextField
+                className={classes.textFields}
+                type="text"
+                label="Username"
+                value={this.state.username}
+                onChange={this.handleInputChangeFor("username")}
+              />
+              <TextField
+                className={classes.textFields}
+                type={this.state.showPassword ? "text" : "password"}
+                label="Password"
+                value={this.state.password}
+                onChange={this.handleInputChangeFor("password")}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment variant="filled" position="end">
+                      <Tooltip
+                        title={
+                          this.state.showPassword
+                            ? "Hide password"
+                            : "Show password"
+                        }
+                      >
+                        <IconButton
+                          aria-label="Toggle password visibility"
+                          onClick={this.handleClickShowPassword}
+                        >
+                          {this.state.showPassword ? (
+                            <Visibility />
+                          ) : (
+                            <VisibilityOff />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    </InputAdornment>
+                  )
+                }}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={this.state.remember}
+                    onChange={this.handleInputChangeFor("remember")}
+                    value="remember"
+                  />
+                }
+                label="Keep me logged in"
+              />
+              <Button
+                className={classes.loginButton}
+                variant="contained"
+                color="primary"
+                size="large"
+                type="submit"
+              >
+                Login
+              </Button>
+            </form>
+          </Zoom>
+        </div>
+      </Fade>
     );
   }
 }

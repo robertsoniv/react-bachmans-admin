@@ -1,4 +1,4 @@
-import { createStyles, Theme, withStyles } from "@material-ui/core";
+import { createStyles, Theme, withStyles, Fade } from "@material-ui/core";
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import DummyComponent from "../Dummy/DummyComponent";
@@ -23,21 +23,23 @@ class MainContent extends React.Component<MainContentProps> {
   render() {
     const { classes } = this.props;
     return (
-      <main className={classes.root}>
-        <div className={classes.toolbar} />
-        <Switch>
-          <Route path="/orders/build" exact component={DummyComponent} />
-          <Route path="/orders/:tab?" component={OrderManagement} />
-          <AppContext.Consumer>
-            {context => (
-              <Route
-                path="/profile"
-                render={props => <Profile {...props} user={context.user} />}
-              />
-            )}
-          </AppContext.Consumer>
-        </Switch>
-      </main>
+      <Fade in={true}>
+        <main className={classes.root}>
+          <div className={classes.toolbar} />
+          <Switch>
+            <Route path="/orders/build" exact component={DummyComponent} />
+            <Route path="/orders/:tab?" component={OrderManagement} />
+            <AppContext.Consumer>
+              {context => (
+                <Route
+                  path="/profile"
+                  render={props => <Profile {...props} user={context.user} />}
+                />
+              )}
+            </AppContext.Consumer>
+          </Switch>
+        </main>
+      </Fade>
     );
   }
 }

@@ -70,6 +70,7 @@ class OrderList extends React.Component<OrderListProps, OrderListState> {
   public retrieveList = () => {
     const { tab, search, from, to } = this.props;
     const filters = this.getTabFilters(tab);
+    this.setState({ list: undefined });
     Orders.List("incoming", {
       search,
       from: from,
@@ -86,20 +87,11 @@ class OrderList extends React.Component<OrderListProps, OrderListState> {
     return TAB_FILTERS_MAP[tab] || TAB_FILTERS_MAP["all"];
   };
   public render() {
-    if (this.state) {
+    if (this.state && this.state.list) {
       const { classes } = this.props;
       const { list } = this.state;
       return (
         <div className={classes.root}>
-          {/* {Meta && Meta.ItemRange && (
-            <Typography
-              align="left"
-              className={classes.metaData}
-              variant="body2"
-            >{`Showing ${Meta.ItemRange[0]} - ${Meta.ItemRange[1]} of ${
-              Meta.TotalCount
-            }`}</Typography>
-          )} */}
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
@@ -107,7 +99,7 @@ class OrderList extends React.Component<OrderListProps, OrderListState> {
                 <TableCell align="center">Date</TableCell>
                 <TableCell align="center">Time</TableCell>
                 <TableCell>User ID</TableCell>
-                <TableCell align="right">SubTotal</TableCell>
+                <TableCell align="right">Subtotal</TableCell>
                 <TableCell align="right">Shipping</TableCell>
                 <TableCell align="right">Tax</TableCell>
                 <TableCell align="right">Total</TableCell>
@@ -150,8 +142,52 @@ class OrderList extends React.Component<OrderListProps, OrderListState> {
         </div>
       );
     }
-    return "Loading data";
+    return <ContentLoading type="table" />;
   }
 }
+
+const loadingStyles = (theme: Theme) =>
+  createStyles({
+    container: {
+      padding: theme.spacing.unit
+    },
+    placeholder: {
+      height: theme.spacing.unit * 5,
+      borderRadius: theme.shape.borderRadius,
+      background: theme.palette.grey[200],
+      width: "100%",
+      display: "block",
+      "&:not(:last-of-type)": {
+        marginBottom: theme.spacing.unit
+      }
+    }
+  });
+
+class Loading extends React.Component<any> {
+  public getPlaceholders = () => {
+    const { classes, type } = this.props;
+    switch (type) {
+      case "table":
+        return (
+          <React.Fragment>
+            <div className={classes.placeholder} />
+            <div className={classes.placeholder} />
+            <div className={classes.placeholder} />
+            <div className={classes.placeholder} />
+            <div className={classes.placeholder} />
+          </React.Fragment>
+        );
+      default:
+        return <div className={classes.placeholder} />;
+    }
+  };
+
+  public render() {
+    const { classes } = this.props;
+    return <div className={classes.container}>{this.getPlaceholders()}</div>;
+  }
+}
+
+export const ContentLoading = withStyles(loadingStyles)(Loading);
 
 export default withStyles(styles)(OrderList);
