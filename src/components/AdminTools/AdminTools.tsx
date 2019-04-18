@@ -7,7 +7,6 @@ class AdminTools extends OcList<
   ListCategory
 > {
   public render() {
-    console.log(typeof Categories.List.arguments);
     return (
       this.state && <pre>{JSON.stringify(this.state.data.Items, null, 2)}</pre>
     );

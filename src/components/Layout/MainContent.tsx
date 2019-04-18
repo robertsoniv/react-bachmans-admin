@@ -39,13 +39,7 @@ class MainContent extends React.Component<MainContentProps> {
             <Route
               path="/admin"
               exact
-              render={props => (
-                <AdminTools
-                  service={Categories}
-                  routeParams={["bachmans"]}
-                  {...props}
-                />
-              )}
+              render={props => <AdminTools service={AdminUsers} {...props} />}
             />
             <Route
               path="/admin/users"
