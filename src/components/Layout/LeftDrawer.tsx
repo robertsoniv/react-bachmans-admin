@@ -36,43 +36,38 @@ interface LeftDrawerProps {
   onToggle: () => void;
 }
 
-interface LeftDrawerState {
-  show: boolean;
-}
-
-class LeftDrawer extends React.Component<LeftDrawerProps, LeftDrawerState> {
-  componentDidMount = () => {
-    this.setState({ show: true });
-  };
+class LeftDrawer extends React.Component<LeftDrawerProps> {
   render() {
     const { classes } = this.props;
     return (
-      <nav className={classes.root}>
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Hidden smUp implementation="js">
-          <Drawer
-            variant="temporary"
-            open={this.props.mobileOpen}
-            onClose={this.props.onToggle}
-            classes={{
-              paper: classes.drawerPaperMobile
-            }}
-          >
-            <LeftDrawerContent />
-          </Drawer>
-        </Hidden>
-        <Hidden xsDown implementation="js">
-          <Drawer
-            classes={{
-              paper: classes.drawerPaper
-            }}
-            variant="permanent"
-            open
-          >
-            <LeftDrawerContent />
-          </Drawer>
-        </Hidden>
-      </nav>
+      <Fade in={true}>
+        <nav className={classes.root}>
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Hidden smUp implementation="js">
+            <Drawer
+              variant="temporary"
+              open={this.props.mobileOpen}
+              onClose={this.props.onToggle}
+              classes={{
+                paper: classes.drawerPaperMobile
+              }}
+            >
+              <LeftDrawerContent />
+            </Drawer>
+          </Hidden>
+          <Hidden xsDown implementation="js">
+            <Drawer
+              classes={{
+                paper: classes.drawerPaper
+              }}
+              variant="permanent"
+              open
+            >
+              <LeftDrawerContent />
+            </Drawer>
+          </Hidden>
+        </nav>
+      </Fade>
     );
   }
 }

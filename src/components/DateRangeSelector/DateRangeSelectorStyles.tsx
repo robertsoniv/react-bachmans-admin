@@ -11,7 +11,7 @@ export default (theme: Theme) => {
   };
   return createStyles({
     root: {
-      padding: "2px 4px",
+      padding: `${theme.spacing.unit - 1}px ${theme.spacing.unit / 2}px`,
       border: "1px solid " + theme.palette.grey[300],
       marginRight: theme.spacing.unit,
       backgroundColor: theme.palette.grey[200],

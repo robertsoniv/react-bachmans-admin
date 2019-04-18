@@ -17,7 +17,6 @@ import SearchField from "../SearchField/SearchField";
 import DateRangeSelector from "../DateRangeSelector/DateRangeSelector";
 import ButtonLink from "../Layout/ButtonLink";
 import { Meta } from "ordercloud-javascript-sdk";
-import { triggerAsyncId } from "async_hooks";
 
 interface OrderManagementParams {
   tab?: string;
@@ -128,7 +127,7 @@ class OrderManagement extends React.Component<
             startDate={this.state.from}
             endDate={this.state.to}
             onChange={this.handleParamUpdate}
-            format={"YYYY-MM-DD HH:mm:ss zZZ"}
+            format={"YYYY-MM-DD"}
           />
 
           <div className={classes.grow} />

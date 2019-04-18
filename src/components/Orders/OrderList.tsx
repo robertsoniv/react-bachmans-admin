@@ -1,5 +1,4 @@
 import {
-  Paper,
   Table,
   TableHead,
   withStyles,
@@ -7,13 +6,13 @@ import {
   createStyles,
   TableRow,
   TableCell,
-  TableBody,
-  Typography
+  TableBody
 } from "@material-ui/core";
-import { ListOrder, Orders, Order, Meta } from "ordercloud-javascript-sdk";
+import { Orders, Order, Meta } from "ordercloud-javascript-sdk";
 import React from "react";
 import moment from "moment-timezone";
 import Currency from "react-currency-formatter";
+import ContentLoading from "../Layout/ContentLoading";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -38,7 +37,7 @@ interface OrderListProps {
 
 const DEFAULT_OPTIONS: any = {
   sortBy: "!ID",
-  pageSize: 100
+  pageSize: 10
 };
 
 const TAB_FILTERS_MAP: { [tabKey: string]: any } = {
@@ -73,8 +72,18 @@ class OrderList extends React.Component<OrderListProps, OrderListState> {
     this.setState({ list: undefined });
     Orders.List("incoming", {
       search,
-      from: from,
-      to: to,
+      from: from
+        ? moment(from, "YYYY-MM-DD")
+            .tz("America/Chicago")
+            .startOf("d")
+            .format("YYYY-MM-DD HH:mm:ss ZZ")
+        : undefined,
+      to: to
+        ? moment(to, "YYYY-MM-DD")
+            .tz("America/Chicago")
+            .endOf("d")
+            .format("YYYY-MM-DD HH:mm:ss ZZ")
+        : undefined,
       filters: filters,
       ...DEFAULT_OPTIONS
     }).then(data => {
@@ -142,52 +151,8 @@ class OrderList extends React.Component<OrderListProps, OrderListState> {
         </div>
       );
     }
-    return <ContentLoading type="table" />;
+    return <ContentLoading type="table" rows={6} />;
   }
 }
-
-const loadingStyles = (theme: Theme) =>
-  createStyles({
-    container: {
-      padding: theme.spacing.unit
-    },
-    placeholder: {
-      height: theme.spacing.unit * 5,
-      borderRadius: theme.shape.borderRadius,
-      background: theme.palette.grey[200],
-      width: "100%",
-      display: "block",
-      "&:not(:last-of-type)": {
-        marginBottom: theme.spacing.unit
-      }
-    }
-  });
-
-class Loading extends React.Component<any> {
-  public getPlaceholders = () => {
-    const { classes, type } = this.props;
-    switch (type) {
-      case "table":
-        return (
-          <React.Fragment>
-            <div className={classes.placeholder} />
-            <div className={classes.placeholder} />
-            <div className={classes.placeholder} />
-            <div className={classes.placeholder} />
-            <div className={classes.placeholder} />
-          </React.Fragment>
-        );
-      default:
-        return <div className={classes.placeholder} />;
-    }
-  };
-
-  public render() {
-    const { classes } = this.props;
-    return <div className={classes.container}>{this.getPlaceholders()}</div>;
-  }
-}
-
-export const ContentLoading = withStyles(loadingStyles)(Loading);
 
 export default withStyles(styles)(OrderList);

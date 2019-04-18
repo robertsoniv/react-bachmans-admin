@@ -16,6 +16,7 @@ import Login from "./components/Login/Login";
 import { client_id, scope } from "./constants/app.constants";
 import OrderCloud from "ordercloud-javascript-sdk";
 import jwtDecode from "jwt-decode";
+import classNames from "classnames";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -24,6 +25,23 @@ const styles = (theme: Theme) =>
       width: "100vw",
       overflowX: "hidden",
       display: "flex"
+    },
+    bgImageBase: {
+      opacity: 0,
+      transition: theme.transitions.create("opacity")
+    },
+    bgImage: {
+      opacity: 1,
+      zIndex: 0,
+      position: "absolute",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      backgroundImage: 'url("/login_bg.jpg")',
+      backgroundPosition: "center",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat"
     }
   });
 
@@ -63,8 +81,8 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   handleDrawerToggle = () => {
-    this.setState(state => {
-      !state.mobileOpen;
+    this.setState({
+      mobileOpen: !this.state.mobileOpen
     });
   };
 
@@ -123,13 +141,23 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { classes } = this.props;
+    const hasContext = Boolean(
+      this.state &&
+        this.state.context &&
+        OrderCloud.Sdk.instance.authentications["oauth2"].accessToken
+    );
     return (
       <div className={classes.root}>
+        <div
+          className={classNames({
+            [classes.bgImageBase]: true,
+            [classes.bgImage]: !hasContext
+          })}
+        />
         <CssBaseline />
         <Router>
           {this.state ? (
-            this.state.context &&
-            OrderCloud.Sdk.instance.authentications["oauth2"].accessToken ? (
+            hasContext ? (
               <AppContext.Provider value={this.state.context}>
                 <AppHeader
                   onLogout={this.handleLogout}

@@ -6,14 +6,10 @@ const LoginStyles = (theme: Theme) =>
     root: {
       flex: "1 1 auto",
       textAlign: "center",
-      backgroundImage: 'url("/login_bg.jpg")',
-      backgroundPosition: "center",
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-      backgroundColor: theme.palette.primary.light,
       padding: theme.spacing.unit,
       boxSizing: "border-box"
     },
+
     error: {
       backgroundColor: theme.palette.error.dark
     },
