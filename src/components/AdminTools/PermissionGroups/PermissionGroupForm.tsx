@@ -130,7 +130,7 @@ class PermissionGroupForm extends React.Component<
     }
   };
 
-  public handleInputChange = (fieldName: "Name" | "Description") => (
+  public handleInputChange = (fieldName: "Name" | "Description" | "ID") => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { group } = this.state;
@@ -214,6 +214,16 @@ class PermissionGroupForm extends React.Component<
           <Grid item md={5}>
             {this.state && this.state.group ? (
               <React.Fragment>
+                <TextField
+                  label="Identifier"
+                  margin="normal"
+                  fullWidth
+                  variant="outlined"
+                  name="ID"
+                  required
+                  onChange={this.handleInputChange("ID")}
+                  value={this.state.group.ID}
+                />
                 <TextField
                   label="Name"
                   margin="normal"

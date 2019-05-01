@@ -7,9 +7,8 @@ import Profile from "../Profile/Profile";
 import { AppContext } from "../../App.context";
 import PermissionGroupManagement from "../AdminTools/PermissionGroups/PermissionGroupManagement";
 import PermissionGroupForm from "../AdminTools/PermissionGroups/PermissionGroupForm";
-import InternalUserManagement from "../AdminTools/InternalUsers/InternalUserManagement";
-import AdminTools from "../AdminTools/AdminTools";
-import { AdminUsers, Users, Categories } from "ordercloud-javascript-sdk";
+import AdminUserManagement from "../AdminUsers/AdminUserManagement";
+import AdminUserForm from "../AdminUsers/AdminUserForm";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -36,25 +35,9 @@ class MainContent extends React.Component<MainContentProps> {
           <Switch>
             <Route path="/orders/build" exact component={DummyComponent} />
             <Route path="/orders/:tab?" component={OrderManagement} />
-            <Route
-              path="/admin"
-              exact
-              render={props => <AdminTools service={AdminUsers} {...props} />}
-            />
-            <Route
-              path="/admin/users"
-              exact
-              component={InternalUserManagement}
-            />
-            {/* <Route
-              path="/admin/users/create"
-              exact
-              component={PermissionGroupForm}
-            />
-            <Route
-              path="/admin/users/:userId"
-              component={PermissionGroupForm}
-            /> */}
+            <Route path="/admin/users" exact component={AdminUserManagement} />
+            <Route path="/admin/users/create" exact component={AdminUserForm} />
+            <Route path="/admin/users/:id" exact component={AdminUserForm} />
             <Route
               path="/admin/roles"
               exact

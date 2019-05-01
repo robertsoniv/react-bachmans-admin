@@ -1,4 +1,10 @@
-import { withStyles, Theme, createStyles } from "@material-ui/core";
+import {
+  withStyles,
+  Theme,
+  createStyles,
+  TableRow,
+  TableCell
+} from "@material-ui/core";
 import React from "react";
 
 const loadingStyles = (theme: Theme) =>
@@ -31,23 +37,24 @@ const loadingStyles = (theme: Theme) =>
   });
 
 const ContentLoading: React.FunctionComponent<any> = (props: any) => {
-  const { classes, type, rows, height, width } = props;
+  const { classes, type, rows, columns, height, width } = props;
   const rowArray = [];
-  for (var i = 0; i < rows; i++) {
+  for (let i = 0; i < rows; i++) {
     rowArray.push(0);
   }
+
   switch (type) {
     case "table":
       return (
-        <div className={classes.tableContainer}>
-          {rowArray.map((r, i) => (
-            <div
-              key={i}
-              className={classes.tablePlaceholder}
-              style={{ height }}
-            />
+        <React.Fragment>
+          {rowArray.map((r, ri) => (
+            <TableRow key={ri}>
+              <TableCell colSpan={columns}>
+                <div className={classes.tablePlaceholder} style={{ height }} />
+              </TableCell>
+            </TableRow>
           ))}
-        </div>
+        </React.Fragment>
       );
     default:
       return (

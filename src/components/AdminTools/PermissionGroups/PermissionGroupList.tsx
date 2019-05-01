@@ -13,6 +13,7 @@ import React from "react";
 import { Edit } from "@material-ui/icons";
 import IconButtonLink from "../../Layout/IconButtonLink";
 import ContentLoading from "../../Layout/ContentLoading";
+import EnhancedTable from "../../Layout/EnhancedTable";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -32,7 +33,7 @@ interface PermissionGroupListProps {
   search?: string;
 }
 
-const DEFAULT_OPTIONS: any = {
+export const DEFAULT_OPTIONS: any = {
   sortBy: "Name",
   pageSize: 100,
   filters: {
@@ -79,6 +80,7 @@ class PermissionGroupList extends React.Component<
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
+                <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell colSpan={2}>Description</TableCell>
               </TableRow>
@@ -87,6 +89,7 @@ class PermissionGroupList extends React.Component<
               {list &&
                 list.map(userGroup => (
                   <TableRow key={userGroup.ID}>
+                    <TableCell>{userGroup.ID}</TableCell>
                     <TableCell>{userGroup.Name}</TableCell>
                     <TableCell>{userGroup.Description}</TableCell>
                     <TableCell align="right">

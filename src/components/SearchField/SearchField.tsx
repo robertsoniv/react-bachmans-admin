@@ -23,7 +23,7 @@ const styles = (theme: Theme) =>
     root: {
       border: "1px solid " + theme.palette.grey[300],
       backgroundColor: theme.palette.grey[200],
-      padding: `${theme.spacing.unit - 1}px ${theme.spacing.unit / 2}px`,
+      padding: `${theme.spacing.unit / 2}px`,
       maxWidth: 500,
       marginRight: theme.spacing.unit,
       display: "flex",

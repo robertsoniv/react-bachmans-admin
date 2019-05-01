@@ -10,7 +10,7 @@ import {
 import React from "react";
 import LeftDrawerContent from "./LeftDrawerContent";
 
-export const drawerWidth = 300;
+export const drawerWidth = 250;
 
 const styles = (theme: Theme) =>
   createStyles({
