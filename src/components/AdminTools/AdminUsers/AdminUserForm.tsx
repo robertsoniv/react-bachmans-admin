@@ -24,11 +24,11 @@ import {
   AdminAddresses,
   ListAddress
 } from "ordercloud-javascript-sdk";
-import { DEFAULT_OPTIONS } from "../AdminTools/PermissionGroups/PermissionGroupList";
-import ContentLoading from "../Layout/ContentLoading";
-import EnhancedTable, { EnhancedTableColumn } from "../Layout/EnhancedTable";
-import ButtonLink from "../Layout/ButtonLink";
-import OcPasswordField from "../Shared/OcPasswordField";
+import { DEFAULT_OPTIONS } from "../PermissionGroups/PermissionGroupList";
+import ContentLoading from "../../Layout/ContentLoading";
+import EnhancedTable, { EnhancedTableColumn } from "../../Layout/EnhancedTable";
+import ButtonLink from "../../Layout/ButtonLink";
+import OcPasswordField from "../../Shared/OcPasswordField";
 
 interface AdminUserFormRouteProps {
   id: string;

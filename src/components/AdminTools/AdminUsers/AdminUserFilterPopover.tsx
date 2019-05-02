@@ -24,6 +24,8 @@ import { FilterList } from "@material-ui/icons";
 import { AdminUserListOptions } from "./AdminUserList";
 import { Address } from "ordercloud-javascript-sdk";
 
+import { pick } from "lodash";
+
 const styles = (theme: Theme) =>
   createStyles({
     iconButton: {
@@ -47,6 +49,12 @@ const styles = (theme: Theme) =>
     }
   });
 
+const ADMIN_USER_FILTER_FIELDS = {
+  status: "",
+  store: "",
+  role: ""
+};
+
 interface AdminUserFilterPopoverProps {
   classes: any;
   stores?: Address[];
@@ -58,21 +66,19 @@ class AdminUserFilterPopover extends React.Component<
   AdminUserFilterPopoverProps
 > {
   get activeFilters() {
-    let activeFilters = 0;
-    Object.values(this.state).forEach(val => {
-      if (typeof val === "string" && val.length) {
-        activeFilters++;
-      }
-    });
-    return activeFilters;
+    const options = pick(this.state, Object.keys(ADMIN_USER_FILTER_FIELDS));
+    return Object.values(options).filter(s => (s as string).length).length;
   }
 
   get initialProps() {
+    const options = pick(
+      this.props.options,
+      Object.keys(ADMIN_USER_FILTER_FIELDS)
+    );
     return {
-      activeFilters: Object.values(this.props.options).length,
-      status: this.props.options.status || "",
-      store: this.props.options.store || "",
-      role: this.props.options.role || ""
+      activeFilters: Object.values(options).length,
+      ...ADMIN_USER_FILTER_FIELDS,
+      ...options
     };
   }
 
@@ -98,11 +104,9 @@ class AdminUserFilterPopover extends React.Component<
 
   public handleApplyClick = (event: React.SyntheticEvent<{}, Event>) => {
     this.setState({ open: false, activeFilters: this.activeFilters });
-    this.props.onChange({
-      store: this.state.store,
-      role: this.state.role,
-      status: this.state.status
-    });
+    this.props.onChange(
+      pick(this.state, Object.keys(ADMIN_USER_FILTER_FIELDS))
+    );
   };
 
   public handleChange = (field: string) => (

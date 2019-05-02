@@ -216,7 +216,7 @@ class PermissionGroupForm extends React.Component<
               <React.Fragment>
                 <TextField
                   label="Identifier"
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                   variant="outlined"
                   name="ID"
@@ -226,7 +226,7 @@ class PermissionGroupForm extends React.Component<
                 />
                 <TextField
                   label="Name"
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                   variant="outlined"
                   name="Name"
@@ -236,7 +236,7 @@ class PermissionGroupForm extends React.Component<
                 />
                 <TextField
                   label="Description"
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                   multiline
                   rows={3}

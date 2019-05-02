@@ -7,8 +7,9 @@ import Profile from "../Profile/Profile";
 import { AppContext } from "../../App.context";
 import PermissionGroupManagement from "../AdminTools/PermissionGroups/PermissionGroupManagement";
 import PermissionGroupForm from "../AdminTools/PermissionGroups/PermissionGroupForm";
-import AdminUserManagement from "../AdminUsers/AdminUserManagement";
-import AdminUserForm from "../AdminUsers/AdminUserForm";
+import AdminUserManagement from "../AdminTools/AdminUsers/AdminUserManagement";
+import AdminUserForm from "../AdminTools/AdminUsers/AdminUserForm";
+import AdminTools from "../AdminTools/AdminTools";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -35,6 +36,7 @@ class MainContent extends React.Component<MainContentProps> {
           <Switch>
             <Route path="/orders/build" exact component={DummyComponent} />
             <Route path="/orders/:tab?" component={OrderManagement} />
+            <Route path="/admin" exact component={AdminTools} />
             <Route path="/admin/users" exact component={AdminUserManagement} />
             <Route path="/admin/users/create" exact component={AdminUserForm} />
             <Route path="/admin/users/:id" exact component={AdminUserForm} />

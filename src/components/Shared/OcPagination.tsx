@@ -151,7 +151,6 @@ class OcPagination extends React.Component<
         <TextField
           className={classes.pageSelect}
           variant="outlined"
-          margin="dense"
           select
           value={currentPage}
           onChange={this.handlePageSelect}

@@ -8,12 +8,21 @@ import {
   TableCell,
   TableBody
 } from "@material-ui/core";
-import { UserGroup, Meta, AdminUserGroups } from "ordercloud-javascript-sdk";
+import {
+  UserGroup,
+  Meta,
+  AdminUserGroups,
+  ListUserGroup
+} from "ordercloud-javascript-sdk";
 import React from "react";
-import { Edit } from "@material-ui/icons";
+import { Edit, EditOutlined } from "@material-ui/icons";
 import IconButtonLink from "../../Layout/IconButtonLink";
 import ContentLoading from "../../Layout/ContentLoading";
-import EnhancedTable from "../../Layout/EnhancedTable";
+import { OcMetaData } from "../../Shared/OcPagination";
+import EnhancedTable, {
+  EnhancedTableColumn,
+  EnhancedTableRowAction
+} from "../../Layout/EnhancedTable";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -27,14 +36,49 @@ const styles = (theme: Theme) =>
     }
   });
 
-interface PermissionGroupListProps {
-  onChange: (meta?: Meta) => void;
-  classes: any;
+const columnDefinition: EnhancedTableColumn[] = [
+  {
+    label: "Role ID",
+    value: "ID",
+    sortable: true
+  },
+  {
+    label: "Name",
+    value: "Name",
+    sortable: true
+  },
+  {
+    label: "Description",
+    value: "Description"
+  }
+];
+
+const rowActionsDefinition: EnhancedTableRowAction[] = [
+  {
+    title: "Edit User Role",
+    icon: <EditOutlined />,
+    link: (group: UserGroup) => {
+      return `/admin/roles/${group.ID}`;
+    }
+  }
+];
+
+export interface PermissionGroupListOptions {
   search?: string;
+  page?: string;
+  sortBy?: string;
+  pageSize?: string;
+}
+
+interface PermissionGroupListProps {
+  refresh: boolean;
+  onChange: (meta?: OcMetaData) => void;
+  onSort: (newSort?: string) => void;
+  classes: any;
+  options: PermissionGroupListOptions;
 }
 
 export const DEFAULT_OPTIONS: any = {
-  sortBy: "Name",
   pageSize: 100,
   filters: {
     "xp.IsPermissionGroup": true
@@ -42,69 +86,55 @@ export const DEFAULT_OPTIONS: any = {
 };
 
 interface PermissionGroupListState {
-  list?: UserGroup[];
+  data?: ListUserGroup;
 }
 class PermissionGroupList extends React.Component<
   PermissionGroupListProps,
   PermissionGroupListState
 > {
-  componentDidMount = () => {
-    this.retrieveList();
+  public state: PermissionGroupListState = {
+    data: undefined
   };
 
-  componentDidUpdate = (prev: PermissionGroupListProps) => {
-    const { search } = this.props;
-    if (search !== prev.search) {
-      this.retrieveList();
+  componentDidMount = () => {
+    this.requestList();
+  };
+
+  componentDidUpdate = (prevProps: PermissionGroupListProps) => {
+    const { options, refresh } = this.props;
+    if (
+      Object.values(options).join("|") !==
+        Object.values(prevProps.options).join("|") ||
+      refresh !== prevProps.refresh
+    ) {
+      this.requestList();
     }
   };
 
-  public retrieveList = () => {
-    const { search } = this.props;
-    this.setState({ list: undefined });
+  public requestList = () => {
+    const { options } = this.props;
+    this.setState({ data: undefined });
     AdminUserGroups.List({
-      search,
+      ...options,
       ...DEFAULT_OPTIONS
     }).then(data => {
-      this.setState({ list: data.Items });
-      this.props.onChange(data.Meta);
+      this.setState({ data });
+      this.props.onChange(data.Meta as OcMetaData);
     });
   };
 
   public render() {
-    if (this.state && this.state.list) {
-      const { classes } = this.props;
-      const { list } = this.state;
-      return (
-        <div className={classes.root}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell colSpan={2}>Description</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {list &&
-                list.map(userGroup => (
-                  <TableRow key={userGroup.ID}>
-                    <TableCell>{userGroup.ID}</TableCell>
-                    <TableCell>{userGroup.Name}</TableCell>
-                    <TableCell>{userGroup.Description}</TableCell>
-                    <TableCell align="right">
-                      <IconButtonLink to={`/admin/roles/${userGroup.ID}`}>
-                        <Edit fontSize="small" />
-                      </IconButtonLink>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </div>
-      );
-    }
-    return <ContentLoading type="table" rows={6} />;
+    const { onSort, options } = this.props;
+    const { data } = this.state;
+    return (
+      <EnhancedTable
+        data={data && data.Items}
+        rowActions={rowActionsDefinition}
+        columns={columnDefinition}
+        sortBy={options.sortBy}
+        onSort={onSort}
+      />
+    );
   }
 }
 

@@ -3,9 +3,9 @@ import { ListUser, User, AdminUsers, Address } from "ordercloud-javascript-sdk";
 import EnhancedTable, {
   EnhancedTableColumn,
   EnhancedTableRowAction
-} from "../Layout/EnhancedTable";
+} from "../../Layout/EnhancedTable";
 import { Chip, Typography } from "@material-ui/core";
-import { EditOutlined } from "@material-ui/icons";
+import { EditOutlined, VisibilityOutlined } from "@material-ui/icons";
 
 const columnDefinition: EnhancedTableColumn[] = [
   {
@@ -42,13 +42,6 @@ const columnDefinition: EnhancedTableColumn[] = [
 ];
 
 const rowActionsDefinition: EnhancedTableRowAction[] = [
-  // {
-  //   title: "View User Info",
-  //   icon: <VisibilityOutlined />,
-  //   onClick: (user: User) => (event: React.MouseEvent) => {
-  //     alert(`You clicked "VIEW" for ${user.FirstName} ${user.LastName}!`);
-  //   }
-  // },
   {
     title: "Edit User Info",
     icon: <EditOutlined />,
@@ -57,7 +50,7 @@ const rowActionsDefinition: EnhancedTableRowAction[] = [
     }
   }
 ];
-let test = 0;
+
 export type AdminUserStatus = "active" | "inactive";
 
 export interface AdminUserListOptions {
@@ -71,6 +64,7 @@ export interface AdminUserListOptions {
 }
 
 export interface AdminUserListProps {
+  refresh: boolean;
   options: AdminUserListOptions;
   stores?: Address[];
   onChange?: (data: ListUser) => void;
@@ -95,10 +89,11 @@ class AdminUserList extends React.Component<
   };
 
   public componentDidUpdate = (prevProps: AdminUserListProps) => {
-    const { options } = this.props;
+    const { options, refresh } = this.props;
     if (
       Object.values(options).join("|") !==
-      Object.values(prevProps.options).join("|")
+        Object.values(prevProps.options).join("|") ||
+      refresh !== prevProps.refresh
     ) {
       this.requestList();
     }

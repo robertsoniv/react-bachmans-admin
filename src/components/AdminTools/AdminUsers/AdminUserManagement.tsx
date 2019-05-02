@@ -6,22 +6,18 @@ import {
   withStyles,
   AppBar,
   Toolbar,
-  IconButton,
   Typography,
   Chip,
-  Tooltip,
-  Fade,
-  InputBase
+  Fade
 } from "@material-ui/core";
-import AdminUserList, {
-  AdminUserListOptions
-} from "../AdminUsers/AdminUserList";
-import OcPagination, { OcMetaData } from "../Shared/OcPagination";
-import { Search, PersonAdd, MoreHoriz, FilterList } from "@material-ui/icons";
+import AdminUserList, { AdminUserListOptions } from "./AdminUserList";
+import OcPagination, { OcMetaData } from "../../Shared/OcPagination";
+import { Search, PersonAdd } from "@material-ui/icons";
 import AdminUserFilterPopover from "./AdminUserFilterPopover";
 import { Address, AdminAddresses, User } from "ordercloud-javascript-sdk";
-import IconButtonLink from "../Layout/IconButtonLink";
+import IconButtonLink from "../../Layout/IconButtonLink";
 import AdminUserBulkActions from "./AdminUserBulkActions";
+import OcSearch from "../../Shared/OcSearch";
 
 interface AdminUserManagementProps extends RouteComponentProps {
   classes: any;
@@ -32,6 +28,8 @@ interface AdminUserManagementState {
   selected: number[];
   items?: User[];
   stores?: Address[];
+  searchTerm: string;
+  refresh: boolean;
 }
 
 const styles = (theme: Theme) =>
@@ -60,16 +58,14 @@ const styles = (theme: Theme) =>
     }
   });
 
-const defaultOptions = {
-  pageSize: 100
-};
-
 class AdminUserManagement extends React.Component<
   AdminUserManagementProps,
   AdminUserManagementState
 > {
   public state: AdminUserManagementState = {
-    selected: new Array()
+    selected: new Array(),
+    searchTerm: "",
+    refresh: false
   };
 
   public componentDidMount = () => {
@@ -88,7 +84,20 @@ class AdminUserManagement extends React.Component<
     this.setState({ selected });
   };
 
-  public handleSearch = (newParams: any) => {};
+  public handleSearchChange = (searchTerm: string) => {
+    const { location, history } = this.props;
+    const params = new URLSearchParams(location.search);
+    if (searchTerm && searchTerm.length) {
+      params.set("search", searchTerm);
+    } else {
+      params.delete("search");
+    }
+    params.delete("page");
+    history.push({
+      ...location,
+      search: params.toString()
+    });
+  };
 
   public handleColumnSort = (newSort?: string) => {
     const { location, history } = this.props;
@@ -138,8 +147,13 @@ class AdminUserManagement extends React.Component<
     });
   };
 
+  public afterBulkAction = () => {
+    this.setState(state => ({ refresh: !state.refresh }));
+  };
+
   public render() {
     const { location, history, classes } = this.props;
+    const search = new URLSearchParams(location.search).get("search") || "";
     const { stores } = this.state;
     const options = this.getOptions([
       "search",
@@ -159,13 +173,15 @@ class AdminUserManagement extends React.Component<
           elevation={0}
         >
           <Toolbar>
-            <Typography variant="h6">Internal Users</Typography>
+            {/* <Typography variant="h6">Internal Users</Typography>
 
+            <div className={classes.spacer} /> */}
+            <OcSearch
+              onChange={this.handleSearchChange}
+              value={search}
+              placeholder="Search Internal Users..."
+            />
             <div className={classes.spacer} />
-            <IconButton title="Search Users" className={classes.iconButton}>
-              <Search color="primary" />
-            </IconButton>
-            {/* <InputBase value={options.search} placeholder="Search" /> */}
             {this.state && this.state.stores && (
               <AdminUserFilterPopover
                 stores={this.state.stores}
@@ -173,15 +189,15 @@ class AdminUserManagement extends React.Component<
                 options={options}
               />
             )}
-            <div title="Create User">
-              <IconButtonLink
-                to="/admin/users/create"
-                className={classes.iconButton}
-              >
-                <PersonAdd />
-              </IconButtonLink>
-            </div>
+            <IconButtonLink
+              title="Create User"
+              to="/admin/users/create"
+              className={classes.iconButton}
+            >
+              <PersonAdd />
+            </IconButtonLink>
             <AdminUserBulkActions
+              afterBulkAction={this.afterBulkAction}
               selected={this.state.selected}
               items={this.state.items}
             />
@@ -203,6 +219,7 @@ class AdminUserManagement extends React.Component<
           </Toolbar>
         </AppBar>
         <AdminUserList
+          refresh={this.state.refresh}
           options={options}
           stores={stores}
           onSelect={this.handleSelectionChange}
