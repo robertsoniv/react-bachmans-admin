@@ -1,14 +1,14 @@
-import React from "react";
 import {
-  withStyles,
-  Theme,
   createStyles,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Theme,
+  withStyles
 } from "@material-ui/core";
 import { MoreHoriz } from "@material-ui/icons";
-import { User, AdminUsers } from "ordercloud-javascript-sdk";
+import { AdminUsers, User } from "ordercloud-javascript-sdk";
+import React from "react";
 import OcConfirmDialog from "../../Shared/OcConfirmDialog";
 
 const styles = (theme: Theme) =>

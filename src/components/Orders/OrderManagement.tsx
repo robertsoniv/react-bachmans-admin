@@ -15,7 +15,7 @@ import OrderList from "./OrderList";
 import SearchField from "../SearchField/SearchField";
 
 import DateRangeSelector from "../DateRangeSelector/DateRangeSelector";
-import ButtonLink from "../Layout/ButtonLink";
+import ButtonLink from "../Shared/ButtonLink";
 import { Meta } from "ordercloud-javascript-sdk";
 
 interface OrderManagementParams {

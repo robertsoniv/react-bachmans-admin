@@ -10,6 +10,9 @@ import PermissionGroupForm from "../AdminTools/PermissionGroups/PermissionGroupF
 import AdminUserManagement from "../AdminTools/AdminUsers/AdminUserManagement";
 import AdminUserForm from "../AdminTools/AdminUsers/AdminUserForm";
 import AdminTools from "../AdminTools/AdminTools";
+import AdminUserDetail from "../AdminTools/AdminUsers/AdminUserDetail";
+import ProtectedRoute from "./ProtectedRoute";
+import AdminUserCreate from "../AdminTools/AdminUsers/AdminUserCreate";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -36,30 +39,61 @@ class MainContent extends React.Component<MainContentProps> {
           <Switch>
             <Route path="/orders/build" exact component={DummyComponent} />
             <Route path="/orders/:tab?" component={OrderManagement} />
-            <Route path="/admin" exact component={AdminTools} />
-            <Route path="/admin/users" exact component={AdminUserManagement} />
-            <Route path="/admin/users/create" exact component={AdminUserForm} />
-            <Route path="/admin/users/:id" exact component={AdminUserForm} />
-            <Route
-              path="/admin/roles"
+            <ProtectedRoute
+              path="/admin"
               exact
-              component={PermissionGroupManagement}
+              component={AdminTools}
+              permission={[
+                "feature-internal-user-admin",
+                "feature-internal-user-reader"
+              ]}
             />
-            <Route
-              path="/admin/roles/create"
+            <ProtectedRoute
+              path="/admin/users"
               exact
-              component={PermissionGroupForm}
+              component={AdminUserManagement}
+              permission={[
+                "feature-internal-user-admin",
+                "feature-internal-user-reader"
+              ]}
             />
-            <Route
-              path="/admin/roles/:groupId"
-              component={PermissionGroupForm}
+            <ProtectedRoute
+              path="/admin/users/create"
+              exact
+              permission={["feature-internal-user-admin"]}
+              component={AdminUserCreate}
+            />
+            <ProtectedRoute
+              path="/admin/users/:id"
+              exact
+              permission={[
+                "feature-internal-user-admin",
+                "feature-internal-user-reader"
+              ]}
+              component={AdminUserDetail}
             />
             <AppContext.Consumer>
               {context => (
-                <Route
-                  path="/profile"
-                  render={props => <Profile {...props} user={context.user} />}
-                />
+                <React.Fragment>
+                  <Route
+                    path="/admin/roles"
+                    exact
+                    component={PermissionGroupManagement}
+                  />
+                  <Route
+                    path="/admin/roles/create"
+                    exact
+                    component={PermissionGroupForm}
+                  />
+                  <Route
+                    path="/admin/roles/:groupId"
+                    component={PermissionGroupForm}
+                  />
+                  <Route
+                    path="/profile"
+                    render={props => <Profile {...props} user={context.user} />}
+                  />
+                </React.Fragment>
               )}
             </AppContext.Consumer>
           </Switch>

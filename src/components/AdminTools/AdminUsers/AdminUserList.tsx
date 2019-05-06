@@ -1,11 +1,12 @@
+import { Chip, Typography } from "@material-ui/core";
+import { EditOutlined, VisibilityOutlined } from "@material-ui/icons";
+import { Address, AdminUsers, ListUser, User } from "ordercloud-javascript-sdk";
 import React from "react";
-import { ListUser, User, AdminUsers, Address } from "ordercloud-javascript-sdk";
+import { AppContext } from "../../../App.context";
 import EnhancedTable, {
   EnhancedTableColumn,
   EnhancedTableRowAction
-} from "../../Layout/EnhancedTable";
-import { Chip, Typography } from "@material-ui/core";
-import { EditOutlined, VisibilityOutlined } from "@material-ui/icons";
+} from "../../Shared/EnhancedTable";
 
 const columnDefinition: EnhancedTableColumn[] = [
   {
@@ -46,7 +47,14 @@ const rowActionsDefinition: EnhancedTableRowAction[] = [
     title: "Edit User Info",
     icon: <EditOutlined />,
     link: (user: User) => {
-      return `/admin/users/${user.ID}`;
+      return `/admin/users/edit/${user.ID}`;
+    }
+  },
+  {
+    title: "View User Info",
+    icon: <VisibilityOutlined />,
+    link: (user: User) => {
+      return `/admin/users/view/${user.ID}`;
     }
   }
 ];
@@ -67,6 +75,7 @@ export interface AdminUserListProps {
   refresh: boolean;
   options: AdminUserListOptions;
   stores?: Address[];
+  onRowClick?: (user: User) => void;
   onChange?: (data: ListUser) => void;
   onSelect?: (selected: number[]) => void;
   onSort?: (newSort?: string) => void;
@@ -165,19 +174,28 @@ class AdminUserList extends React.Component<
   };
 
   public render() {
-    const { onSelect, onSort, options } = this.props;
+    const { onSelect, onSort, options, onRowClick } = this.props;
     const { data } = this.state;
     return (
-      <EnhancedTable
-        selectable
-        data={data && data.Items}
-        cellRenderer={this.renderCell}
-        rowActions={rowActionsDefinition}
-        columns={columnDefinition}
-        sortBy={options.sortBy}
-        onSelect={onSelect}
-        onSort={onSort}
-      />
+      <AppContext.Consumer>
+        {context => (
+          <EnhancedTable
+            selectable={Boolean(
+              context &&
+                context.permissions &&
+                context.permissions.includes("feature-internal-user-bulk") &&
+                context.permissions.includes("feature-internal-user-admin")
+            )}
+            data={data && data.Items}
+            cellRenderer={this.renderCell}
+            onRowClick={onRowClick}
+            columns={columnDefinition}
+            sortBy={options.sortBy}
+            onSelect={onSelect}
+            onSort={onSort}
+          />
+        )}
+      </AppContext.Consumer>
     );
   }
 }

@@ -14,9 +14,12 @@ import LeftDrawer from "./components/Layout/LeftDrawer";
 import MainContent from "./components/Layout/MainContent";
 import Login from "./components/Login/Login";
 import { client_id, scope } from "./constants/app.constants";
-import OrderCloud from "ordercloud-javascript-sdk";
+import OrderCloud, {
+  SecurityProfileAssignment
+} from "ordercloud-javascript-sdk";
 import jwtDecode from "jwt-decode";
 import classNames from "classnames";
+import { pick, flatten } from "lodash";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -113,15 +116,41 @@ class App extends React.Component<AppProps, AppState> {
     try {
       const user = await OrderCloud.Me.Get();
       const listUserGroups = await OrderCloud.Me.ListUserGroups({
-        pageSize: 100
+        pageSize: 100,
+        filters: {
+          "xp.IsPermissionGroup": "true"
+        }
       });
+
+      const queue = new Array();
+      if (listUserGroups.Items && listUserGroups.Items.length) {
+        listUserGroups.Items.forEach(ug => {
+          queue.push(
+            OrderCloud.SecurityProfiles.ListAssignments({
+              pageSize: 100,
+              userGroupID: ug.ID
+            })
+          );
+        });
+      }
+
+      const results = await Promise.all(queue);
+      const permissions = flatten(
+        results.map(response =>
+          response.Items.map(
+            (i: SecurityProfileAssignment) => i.SecurityProfileID
+          )
+        )
+      );
+      console.log(permissions);
+
       this.setState(state => {
         return {
           ...state,
           context: {
             token,
             user,
-            groups: listUserGroups.Items
+            permissions
           }
         };
       });

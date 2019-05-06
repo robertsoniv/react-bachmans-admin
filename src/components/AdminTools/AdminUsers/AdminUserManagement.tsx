@@ -1,23 +1,23 @@
+import {
+  AppBar,
+  Chip,
+  createStyles,
+  Fade,
+  Theme,
+  Toolbar,
+  withStyles
+} from "@material-ui/core";
+import { PersonAdd } from "@material-ui/icons";
+import { Address, AdminAddresses, User } from "ordercloud-javascript-sdk";
 import React from "react";
 import { RouteComponentProps } from "react-router";
-import {
-  Theme,
-  createStyles,
-  withStyles,
-  AppBar,
-  Toolbar,
-  Typography,
-  Chip,
-  Fade
-} from "@material-ui/core";
-import AdminUserList, { AdminUserListOptions } from "./AdminUserList";
+import ProtectedContent from "../../Layout/ProtectedContent";
+import IconButtonLink from "../../Shared/IconButtonLink";
 import OcPagination, { OcMetaData } from "../../Shared/OcPagination";
-import { Search, PersonAdd } from "@material-ui/icons";
-import AdminUserFilterPopover from "./AdminUserFilterPopover";
-import { Address, AdminAddresses, User } from "ordercloud-javascript-sdk";
-import IconButtonLink from "../../Layout/IconButtonLink";
-import AdminUserBulkActions from "./AdminUserBulkActions";
 import OcSearch from "../../Shared/OcSearch";
+import AdminUserBulkActions from "./AdminUserBulkActions";
+import AdminUserFilterPopover from "./AdminUserFilterPopover";
+import AdminUserList, { AdminUserListOptions } from "./AdminUserList";
 
 interface AdminUserManagementProps extends RouteComponentProps {
   classes: any;
@@ -151,6 +151,11 @@ class AdminUserManagement extends React.Component<
     this.setState(state => ({ refresh: !state.refresh }));
   };
 
+  public handleRowClick = (user: User) => {
+    const { history } = this.props;
+    history.push(`/admin/users/${user.ID}`);
+  };
+
   public render() {
     const { location, history, classes } = this.props;
     const search = new URLSearchParams(location.search).get("search") || "";
@@ -173,9 +178,6 @@ class AdminUserManagement extends React.Component<
           elevation={0}
         >
           <Toolbar>
-            {/* <Typography variant="h6">Internal Users</Typography>
-
-            <div className={classes.spacer} /> */}
             <OcSearch
               onChange={this.handleSearchChange}
               value={search}
@@ -189,18 +191,26 @@ class AdminUserManagement extends React.Component<
                 options={options}
               />
             )}
-            <IconButtonLink
-              title="Create User"
-              to="/admin/users/create"
-              className={classes.iconButton}
+            <ProtectedContent
+              hasAccess={p => p.includes("feature-internal-user-admin")}
             >
-              <PersonAdd />
-            </IconButtonLink>
-            <AdminUserBulkActions
-              afterBulkAction={this.afterBulkAction}
-              selected={this.state.selected}
-              items={this.state.items}
-            />
+              <IconButtonLink
+                title="Create User"
+                to="/admin/users/create"
+                className={classes.iconButton}
+              >
+                <PersonAdd />
+              </IconButtonLink>
+            </ProtectedContent>
+            <ProtectedContent
+              hasAccess={p => p.includes("feature-internal-user-bulk")}
+            >
+              <AdminUserBulkActions
+                afterBulkAction={this.afterBulkAction}
+                selected={this.state.selected}
+                items={this.state.items}
+              />
+            </ProtectedContent>
             <div className={classes.grow} />
             <Fade in={this.state.selected.length > 0}>
               <Chip
@@ -222,6 +232,7 @@ class AdminUserManagement extends React.Component<
           refresh={this.state.refresh}
           options={options}
           stores={stores}
+          onRowClick={this.handleRowClick}
           onSelect={this.handleSelectionChange}
           onChange={this.handleListChange}
           onSort={this.handleColumnSort}

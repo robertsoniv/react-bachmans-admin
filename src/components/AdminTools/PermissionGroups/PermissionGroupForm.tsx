@@ -21,7 +21,7 @@ import {
   Grid
 } from "@material-ui/core";
 import { RouteComponentProps } from "react-router";
-import ButtonLink from "../../Layout/ButtonLink";
+import ButtonLink from "../../Shared/ButtonLink";
 import Case from "case";
 import ContentLoading from "../../Layout/ContentLoading";
 
@@ -259,8 +259,8 @@ class PermissionGroupForm extends React.Component<
               this.state.featureTypes &&
               this.state.profileIds ? (
                 Object.entries(this.state.featureTypes).map(
-                  ([category, features]) => (
-                    <FormControl margin="normal">
+                  ([category, features], index) => (
+                    <FormControl margin="normal" key={index}>
                       <FormLabel>{Case.title(category)}</FormLabel>
                       <FormGroup>
                         {features.map(feature => (

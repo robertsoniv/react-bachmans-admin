@@ -7,7 +7,6 @@ import {
   DialogActions,
   Button
 } from "@material-ui/core";
-import classes from "*.module.scss";
 
 interface OcConfirmDialogProps {
   open: boolean;

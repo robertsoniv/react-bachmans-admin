@@ -1,30 +1,25 @@
-import React from "react";
 import {
-  IconButton,
-  withStyles,
-  Theme,
-  createStyles,
-  Popover,
-  Typography,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  MenuItem,
-  Grid,
-  TextField,
-  Paper,
   Badge,
-  Tooltip,
-  Divider,
-  Button
+  Button,
+  createStyles,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  IconButton,
+  MenuItem,
+  Paper,
+  Popover,
+  Radio,
+  RadioGroup,
+  TextField,
+  Theme,
+  withStyles
 } from "@material-ui/core";
 import { FilterList } from "@material-ui/icons";
-import { AdminUserListOptions } from "./AdminUserList";
-import { Address } from "ordercloud-javascript-sdk";
-
 import { pick } from "lodash";
+import { Address } from "ordercloud-javascript-sdk";
+import React from "react";
+import { AdminUserListOptions } from "./AdminUserList";
 
 const styles = (theme: Theme) =>
   createStyles({

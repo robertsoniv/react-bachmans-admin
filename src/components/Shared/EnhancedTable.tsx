@@ -19,7 +19,7 @@ import { TableCellProps } from "@material-ui/core/TableCell";
 import { IconProps } from "@material-ui/core/Icon";
 import { uniq } from "lodash";
 import { fade } from "@material-ui/core/styles/colorManipulator";
-import ContentLoading from "./ContentLoading";
+import ContentLoading from "../Layout/ContentLoading";
 import IconButtonLink from "./IconButtonLink";
 
 const styles = (theme: Theme) =>
@@ -30,6 +30,9 @@ const styles = (theme: Theme) =>
     tableActionCell: {
       position: "relative",
       width: 0
+    },
+    tableBodyRowClickable: {
+      cursor: "pointer"
     },
     tableRowActions: {
       paddingLeft: theme.spacing.unit * 5,
@@ -88,7 +91,9 @@ interface EnhancedTableProps {
   sortBy?: string;
   selectable?: boolean;
   selected?: string[];
+  className?: string;
   rowActions?: EnhancedTableRowAction[];
+  onRowClick?: (row: any) => void;
   cellRenderer?: (row: any, column: EnhancedTableColumn, value: any) => any;
   onSelect?: (selected: number[]) => void;
   onSort?: (newSort?: string) => void;
@@ -136,6 +141,7 @@ class EnhancedTable extends React.Component<
   };
 
   public handleSelectClick = (index: number) => (event: React.MouseEvent) => {
+    event.stopPropagation();
     const { selected } = this.state;
     const selectedIndex = selected.indexOf(index);
     let newSelected = new Array();
@@ -186,6 +192,12 @@ class EnhancedTable extends React.Component<
   public handleSortClick = (newSort?: string) => (event: React.MouseEvent) => {
     if (this.props.onSort) {
       this.props.onSort(newSort);
+    }
+  };
+
+  public handleTableBodyRowClick = (row: any) => (event: React.MouseEvent) => {
+    if (this.props.onRowClick) {
+      this.props.onRowClick(row);
     }
   };
 
@@ -259,7 +271,13 @@ class EnhancedTable extends React.Component<
     const { columns, selectable, rowActions, classes } = this.props;
     const { selected } = this.state;
     return (
-      <TableRow key={index} className={classes.tableBodyRow}>
+      <TableRow
+        key={index}
+        className={`${classes.tableBodyRow} ${
+          this.props.onRowClick ? classes.tableBodyRowClickable : ""
+        }`}
+        onClick={this.handleTableBodyRowClick(row)}
+      >
         {selectable && (
           <TableCell padding="checkbox">
             <Checkbox
@@ -353,12 +371,12 @@ class EnhancedTable extends React.Component<
   };
 
   public render() {
-    const { data, columns, selectable, rowActions } = this.props;
+    const { data, columns, selectable, rowActions, className } = this.props;
     const classes = this.props.classes!;
     const tableHead = this.tableHead();
     const tableFooter = this.tableFooter();
     return (
-      <Paper className={classes.root} elevation={0}>
+      <Paper className={`${classes.root} ${className}`} elevation={0}>
         <Table className={classes.paper}>
           {tableHead}
           <TableBody>

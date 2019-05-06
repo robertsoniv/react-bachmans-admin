@@ -5,7 +5,8 @@ import {
   TextField,
   withStyles,
   Theme,
-  createStyles
+  createStyles,
+  Tooltip
 } from "@material-ui/core";
 import {
   NavigateBefore,
@@ -32,6 +33,7 @@ interface OcPaginationProps {
 
 interface OcPaginationState {
   currentPage: number;
+  currentPageSize: number;
   pageOptions: React.ReactElement<MenuItemProps>[];
 }
 
@@ -70,7 +72,8 @@ class OcPagination extends React.Component<
 
   public state = {
     pageOptions: this.setPageOptions(),
-    currentPage: this.props.meta.Page
+    currentPage: this.props.meta.Page,
+    currentPageSize: this.props.meta.PageSize
   };
 
   public componentDidMount = () => {
@@ -125,9 +128,25 @@ class OcPagination extends React.Component<
     this.updateLocation(page);
   };
 
+  public handlePageSizeSelect = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const pageSize = Number(event.target.value);
+    this.setState({ currentPageSize: pageSize });
+
+    const { location, history } = this.props;
+    const params = new URLSearchParams(location.search);
+    params.set("pageSize", pageSize.toString());
+
+    history.push({
+      ...location,
+      search: params.toString()
+    });
+  };
+
   public render() {
     const { classes, meta } = this.props;
-    const { currentPage, pageOptions } = this.state;
+    const { currentPage, currentPageSize, pageOptions } = this.state;
     const { TotalCount, TotalPages, ItemRange } = meta;
     return (
       <div className={classes.root}>
@@ -149,7 +168,6 @@ class OcPagination extends React.Component<
           <NavigateBefore />
         </IconButton>
         <TextField
-          className={classes.pageSelect}
           variant="outlined"
           select
           value={currentPage}
@@ -171,6 +189,19 @@ class OcPagination extends React.Component<
         >
           <LastPage />
         </IconButton>
+        <TextField
+          title="Page Size"
+          variant="outlined"
+          select
+          value={currentPageSize}
+          onChange={this.handlePageSizeSelect}
+        >
+          <MenuItem value="5">5</MenuItem>
+          <MenuItem value="10">10</MenuItem>
+          <MenuItem value="25">25</MenuItem>
+          <MenuItem value="50">50</MenuItem>
+          <MenuItem value="100">100</MenuItem>
+        </TextField>
       </div>
     );
   }

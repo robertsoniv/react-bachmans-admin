@@ -5,11 +5,21 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { MuiThemeProvider } from "@material-ui/core";
 import BachmansTheme from "./constants/theme.constants";
+import AlertProvider from "./components/Alerts/AlertProvider";
+import alertReducer from "./components/Alerts/redux/reducer";
+import { createStore } from "redux";
+import { Provider } from "react-redux";
+
+const alertStore = createStore(alertReducer);
 
 ReactDOM.render(
   <CookiesProvider>
     <MuiThemeProvider theme={BachmansTheme}>
-      <App />
+      <Provider store={alertStore}>
+        <AlertProvider>
+          <App />
+        </AlertProvider>
+      </Provider>
     </MuiThemeProvider>
   </CookiesProvider>,
   document.getElementById("root")

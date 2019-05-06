@@ -1,28 +1,16 @@
-import {
-  Table,
-  TableHead,
-  withStyles,
-  Theme,
-  createStyles,
-  TableRow,
-  TableCell,
-  TableBody
-} from "@material-ui/core";
+import { withStyles, Theme, createStyles } from "@material-ui/core";
 import {
   UserGroup,
-  Meta,
   AdminUserGroups,
   ListUserGroup
 } from "ordercloud-javascript-sdk";
 import React from "react";
-import { Edit, EditOutlined } from "@material-ui/icons";
-import IconButtonLink from "../../Layout/IconButtonLink";
-import ContentLoading from "../../Layout/ContentLoading";
+import { EditOutlined } from "@material-ui/icons";
 import { OcMetaData } from "../../Shared/OcPagination";
 import EnhancedTable, {
   EnhancedTableColumn,
   EnhancedTableRowAction
-} from "../../Layout/EnhancedTable";
+} from "../../Shared/EnhancedTable";
 
 const styles = (theme: Theme) =>
   createStyles({

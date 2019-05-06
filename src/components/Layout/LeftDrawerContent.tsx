@@ -18,7 +18,7 @@ import MiscellaneousIconActive from "@material-ui/icons/SettingsTwoTone";
 import ProfileIcon from "@material-ui/icons/AccountCircleOutlined";
 import ProfileIconActive from "@material-ui/icons/AccountCircleTwoTone";
 import React from "react";
-import ListItemNavLink from "./ListItemNavLink";
+import ListItemNavLink from "../Shared/ListItemNavLink";
 
 const LeftDrawerContent: React.FunctionComponent = () => {
   return (
@@ -42,7 +42,7 @@ const LeftDrawerContent: React.FunctionComponent = () => {
           icon={<CustomersIcon />}
           activeIcon={<CustomersIconActive />}
         />
-        <ListItemNavLink
+        {/* <ListItemNavLink
           to="/categories"
           primary="Categories"
           icon={<CategoriesIcon />}
@@ -71,7 +71,7 @@ const LeftDrawerContent: React.FunctionComponent = () => {
           primary="Miscellaneous"
           icon={<MiscellaneousIcon />}
           activeIcon={<MiscellaneousIconActive />}
-        />
+        /> */}
         <ListItemNavLink
           to="/admin"
           primary="Admin Tools"

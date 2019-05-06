@@ -4,7 +4,6 @@ import {
   createStyles,
   withStyles,
   Toolbar,
-  Paper,
   AppBar
 } from "@material-ui/core";
 
@@ -14,7 +13,7 @@ import PermissionGroupList, {
 } from "./PermissionGroupList";
 import OcSearch from "../../Shared/OcSearch";
 import OcPagination, { OcMetaData } from "../../Shared/OcPagination";
-import IconButtonLink from "../../Layout/IconButtonLink";
+import IconButtonLink from "../../Shared/IconButtonLink";
 import { Add } from "@material-ui/icons";
 
 interface PermissionGroupMangementProps extends RouteComponentProps {

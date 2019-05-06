@@ -1,11 +1,9 @@
 import React from "react";
-import { RouteComponentProps } from "react-router";
 import {
   Theme,
   createStyles,
   withStyles,
   TextField,
-  Typography,
   Grid,
   MenuItem,
   FormControlLabel,
@@ -13,7 +11,11 @@ import {
   Paper,
   FormLabel,
   FormControl,
-  Button
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Typography
 } from "@material-ui/core";
 import {
   AdminUsers,
@@ -22,20 +24,19 @@ import {
   ListUserGroup,
   ListUserGroupAssignment,
   AdminAddresses,
-  ListAddress
+  ListAddress,
+  UserGroup
 } from "ordercloud-javascript-sdk";
 import { DEFAULT_OPTIONS } from "../PermissionGroups/PermissionGroupList";
 import ContentLoading from "../../Layout/ContentLoading";
-import EnhancedTable, { EnhancedTableColumn } from "../../Layout/EnhancedTable";
-import ButtonLink from "../../Layout/ButtonLink";
 import OcPasswordField from "../../Shared/OcPasswordField";
+import { ErrorSharp } from "@material-ui/icons";
 
-interface AdminUserFormRouteProps {
-  id: string;
-}
-
-interface AdminUserFormProps
-  extends RouteComponentProps<AdminUserFormRouteProps> {
+interface AdminUserFormProps {
+  user: User;
+  assignments?: ListUserGroupAssignment;
+  disabled?: boolean;
+  onSubmit: (updatedUser: User, selectedRoles: string[]) => Promise<any>;
   classes: any;
   theme: Theme;
 }
@@ -44,30 +45,12 @@ interface AdminUserFormState {
   user: User;
   groups: ListUserGroup;
   assignments: ListUserGroupAssignment;
-  selected: string[];
+  selectedRoles: string[];
   newSelected: number[];
+  errors: string[];
   stores: ListAddress;
   passwordConfirmation: string;
 }
-
-const initialUser: User = {
-  Username: "",
-  FirstName: "",
-  LastName: "",
-  Email: "",
-  Password: "",
-  Active: false,
-  xp: {
-    StoreAddressID: ""
-  }
-};
-
-const groupTableColumns: EnhancedTableColumn[] = [
-  {
-    label: "Role",
-    value: "Name"
-  }
-];
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -78,8 +61,14 @@ const styles = (theme: Theme) =>
       display: "flex",
       flexFlow: "row nowrap"
     },
+    grow: {
+      flexGrow: 1
+    },
     spacer: {
       width: theme.spacing.unit
+    },
+    userRoles: {
+      border: `1px solid ${theme.palette.divider}`
     }
   });
 
@@ -88,9 +77,7 @@ class AdminUserForm extends React.Component<
   AdminUserFormState
 > {
   public componentDidMount = () => {
-    const userID = this.props.match.params.id;
-
-    this.setState({ passwordConfirmation: "" });
+    this.setInitialState();
 
     AdminUserGroups.List(DEFAULT_OPTIONS).then(groups => {
       this.setState({ groups });
@@ -101,23 +88,24 @@ class AdminUserForm extends React.Component<
         this.setState({ stores });
       }
     );
+  };
 
-    if (userID) {
-      AdminUsers.Get(userID).then(user => {
-        this.setState({ user: { ...initialUser, ...user } });
-      });
-
-      AdminUserGroups.ListUserAssignments({ pageSize: 100, userID }).then(
-        assignments => {
-          this.setState({
-            assignments,
-            selected: assignments.Items!.map(a => a.UserGroupID!)
-          });
-        }
-      );
-    } else {
-      this.setState({ user: initialUser, selected: new Array() });
+  public componentDidUpdate = (prevProps: AdminUserFormProps) => {
+    if (this.props.disabled && this.props.disabled !== prevProps.disabled) {
+      this.setInitialState();
     }
+  };
+
+  public setInitialState = () => {
+    const { user, assignments } = this.props;
+    this.setState({
+      passwordConfirmation: "",
+      errors: new Array(),
+      user,
+      selectedRoles: assignments
+        ? assignments.Items!.map(a => a.UserGroupID!)
+        : new Array()
+    });
   };
 
   public handleStoreChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +141,6 @@ class AdminUserForm extends React.Component<
   };
 
   public handlePasswordChange = (password: string) => {
-    console.log("pass change", password);
     this.setState(state => {
       return {
         ...state,
@@ -172,6 +159,9 @@ class AdminUserForm extends React.Component<
     this.setState(state => {
       return {
         ...state,
+        errors: state.errors.filter(
+          e => key !== "Username" && e !== "User.UsernameMustBeUnique"
+        ),
         user: {
           ...state.user,
           [key]: value
@@ -182,63 +172,49 @@ class AdminUserForm extends React.Component<
 
   public onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    AdminUsers.Save(this.state.user.ID || this.state.user.Username!, {
-      ID: this.state.user.Username,
-      ...this.state.user
-    })
-      .then(savedUser => {
-        if (this.state.groups && this.state.groups.Items) {
-          //update user assignments based on newSelected & selected
-          this.state.groups.Items.forEach((group, index) => {
-            if (
-              this.state.newSelected.indexOf(index) > -1 &&
-              !this.state.selected.includes(group.ID!)
-            ) {
-              AdminUserGroups.SaveUserAssignment({
-                UserID: savedUser.ID,
-                UserGroupID: group.ID
-              });
-              //save group assignment
-            }
-            if (
-              this.state.newSelected.indexOf(index) == -1 &&
-              this.state.selected.includes(group.ID!)
-            ) {
-              AdminUserGroups.DeleteUserAssignment(group.ID!, savedUser.ID!);
-              //delete group assignment
-            }
-          });
-        }
-        //redirect back to list
-      })
-      .catch(error => {
-        console.log(error);
+    if (this.props.onSubmit) {
+      this.props
+        .onSubmit(this.state.user, this.state.selectedRoles)
+        .catch(this.handleError);
+    }
+  };
+
+  public handleError = (error: any) => {
+    if (
+      error &&
+      error.response &&
+      error.response.body &&
+      error.response.body.Errors &&
+      error.response.body.Errors.length
+    ) {
+      this.setState({
+        errors: error.response.body.Errors.map((e: any) => e.ErrorCode)
       });
+    }
+  };
+
+  public handleRoleToggle = (roleID: string) => (event: React.MouseEvent) => {
+    const { selectedRoles } = this.state;
+    if (selectedRoles.includes(roleID)) {
+      this.setState({
+        selectedRoles: selectedRoles.filter(id => id !== roleID)
+      });
+    } else {
+      this.setState({ selectedRoles: [...selectedRoles, roleID] });
+    }
   };
 
   public render() {
-    const { classes, theme } = this.props;
+    const { classes, theme, disabled } = this.props;
 
     return this.state ? (
       <form
-        name="PermissionGroupForm"
+        name="AdminUserForm"
         className={classes.root}
         onSubmit={this.onSubmit}
       >
-        {this.state.user ? (
-          <Typography component="legend" variant="h5">{`${
-            this.state.user.ID ? "Edit" : "New"
-          } Internal User`}</Typography>
-        ) : (
-          <ContentLoading
-            rows={1}
-            height={theme.typography.h5.fontSize}
-            width={250}
-          />
-        )}
-
         <Grid container spacing={16}>
-          <Grid item sm={6} md={5}>
+          <Grid item md={5}>
             {this.state.user ? (
               <React.Fragment>
                 <TextField
@@ -248,6 +224,16 @@ class AdminUserForm extends React.Component<
                   required
                   value={this.state.user.Username}
                   onChange={this.handleInputChange("Username")}
+                  InputProps={{ readOnly: disabled }}
+                  helperText={
+                    this.state.errors &&
+                    this.state.errors.includes("User.UsernameMustBeUnique") && (
+                      <Typography variant="inherit" color="error">
+                        This Username is already in use by another Internal
+                        User.
+                      </Typography>
+                    )
+                  }
                   variant="outlined"
                   inputProps={{ maxLength: 10 }}
                 />
@@ -258,6 +244,7 @@ class AdminUserForm extends React.Component<
                   label="First Name"
                   value={this.state.user.FirstName}
                   onChange={this.handleInputChange("FirstName")}
+                  InputProps={{ readOnly: disabled }}
                   variant="outlined"
                 />
                 <TextField
@@ -267,6 +254,7 @@ class AdminUserForm extends React.Component<
                   label="Last Name"
                   value={this.state.user.LastName}
                   onChange={this.handleInputChange("LastName")}
+                  InputProps={{ readOnly: disabled }}
                   variant="outlined"
                 />
                 <TextField
@@ -276,14 +264,39 @@ class AdminUserForm extends React.Component<
                   label="Email Address"
                   value={this.state.user.Email}
                   onChange={this.handleInputChange("Email")}
+                  InputProps={{ readOnly: disabled }}
                   variant="outlined"
                 />
-                <OcPasswordField
-                  required={!Boolean(this.state.user.ID)}
-                  value={this.state.user.Password!}
-                  onChange={this.handlePasswordChange}
-                />
+                {this.state.stores && this.state.stores.Items ? (
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    margin="dense"
+                    label="Store"
+                    select
+                    required
+                    value={this.state.user.xp.StoreAddressID}
+                    InputProps={{ readOnly: disabled }}
+                    onChange={this.handleStoreChange}
+                  >
+                    {this.state.stores.Items.map(store => (
+                      <MenuItem key={store.ID} value={store.ID}>
+                        {store.CompanyName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                ) : (
+                  <ContentLoading rows={1} />
+                )}
+                {!disabled && (
+                  <OcPasswordField
+                    required={!Boolean(this.state.user.ID)}
+                    value={this.state.user.Password!}
+                    onChange={this.handlePasswordChange}
+                  />
+                )}
                 <FormControlLabel
+                  disabled={disabled}
                   control={
                     <Checkbox
                       color="primary"
@@ -298,42 +311,38 @@ class AdminUserForm extends React.Component<
               <ContentLoading rows={5} />
             )}
           </Grid>
-          <Grid item sm={6} md={7}>
-            {this.state.user && this.state.stores && this.state.stores.Items ? (
-              <TextField
-                fullWidth
-                variant="outlined"
-                margin="dense"
-                label="Store"
-                select
-                required
-                value={this.state.user.xp.StoreAddressID}
-                onChange={this.handleStoreChange}
-              >
-                {this.state.stores.Items.map(store => (
-                  <MenuItem key={store.ID} value={store.ID}>
-                    {store.CompanyName}
-                  </MenuItem>
-                ))}
-              </TextField>
-            ) : (
-              <ContentLoading rows={1} />
-            )}
+          <Grid item md={7}>
             {this.state.groups &&
             this.state.groups.Items &&
-            this.state.selected ? (
+            this.state.selectedRoles ? (
               <FormControl margin="dense" fullWidth>
                 <FormLabel style={{ marginBottom: theme.spacing.unit }}>
                   User Roles:
                 </FormLabel>
-                <Paper>
-                  <EnhancedTable
-                    selectable
-                    selected={this.state.selected}
-                    data={this.state.groups.Items}
-                    columns={groupTableColumns}
-                    onSelect={this.handleSelectionChange}
-                  />
+                <Paper elevation={0} className={classes.userRoles}>
+                  <List>
+                    {this.state.groups.Items.map(g => (
+                      <ListItem
+                        disabled={disabled}
+                        key={g.ID}
+                        dense
+                        button
+                        onClick={this.handleRoleToggle(g.ID!)}
+                      >
+                        <Checkbox
+                          readOnly={disabled}
+                          color="primary"
+                          checked={this.state.selectedRoles.includes(g.ID!)}
+                          tabIndex={-1}
+                          disableRipple
+                        />
+                        <ListItemText
+                          primary={g.Name}
+                          secondary={g.Description}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
                 </Paper>
               </FormControl>
             ) : (
@@ -341,26 +350,22 @@ class AdminUserForm extends React.Component<
             )}
           </Grid>
         </Grid>
-        <FormControl margin="normal" fullWidth className={classes.formButtons}>
-          <ButtonLink
-            type="button"
-            size="large"
-            color="default"
-            variant="outlined"
-            to="/admin/users"
+        {!disabled && (
+          <FormControl
+            margin="normal"
+            fullWidth
+            className={classes.formButtons}
           >
-            Cancel
-          </ButtonLink>
-          <div className={classes.spacer} />
-          <Button
-            type="submit"
-            size="large"
-            color="secondary"
-            variant="contained"
-          >
-            Save
-          </Button>
-        </FormControl>
+            <Button
+              type="submit"
+              size="large"
+              color="secondary"
+              variant="contained"
+            >
+              Save Changes
+            </Button>
+          </FormControl>
+        )}
       </form>
     ) : (
       <ContentLoading rows={6} />
