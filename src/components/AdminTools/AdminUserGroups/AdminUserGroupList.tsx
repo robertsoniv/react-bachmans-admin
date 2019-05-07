@@ -41,29 +41,20 @@ const columnDefinition: EnhancedTableColumn[] = [
   }
 ];
 
-const rowActionsDefinition: EnhancedTableRowAction[] = [
-  {
-    title: "Edit User Role",
-    icon: <EditOutlined />,
-    link: (group: UserGroup) => {
-      return `/admin/roles/${group.ID}`;
-    }
-  }
-];
-
-export interface PermissionGroupListOptions {
+export interface AdminUserGroupListOptions {
   search?: string;
   page?: string;
   sortBy?: string;
   pageSize?: string;
 }
 
-interface PermissionGroupListProps {
+interface AdminUserGroupListProps {
   refresh: boolean;
+  onRowClick?: (userGroup: UserGroup) => void;
   onChange: (meta?: OcMetaData) => void;
   onSort: (newSort?: string) => void;
   classes: any;
-  options: PermissionGroupListOptions;
+  options: AdminUserGroupListOptions;
 }
 
 export const DEFAULT_OPTIONS: any = {
@@ -73,14 +64,14 @@ export const DEFAULT_OPTIONS: any = {
   }
 };
 
-interface PermissionGroupListState {
+interface AdminUserGroupListState {
   data?: ListUserGroup;
 }
-class PermissionGroupList extends React.Component<
-  PermissionGroupListProps,
-  PermissionGroupListState
+class AdminUserGroupList extends React.Component<
+  AdminUserGroupListProps,
+  AdminUserGroupListState
 > {
-  public state: PermissionGroupListState = {
+  public state: AdminUserGroupListState = {
     data: undefined
   };
 
@@ -88,7 +79,7 @@ class PermissionGroupList extends React.Component<
     this.requestList();
   };
 
-  componentDidUpdate = (prevProps: PermissionGroupListProps) => {
+  componentDidUpdate = (prevProps: AdminUserGroupListProps) => {
     const { options, refresh } = this.props;
     if (
       Object.values(options).join("|") !==
@@ -100,7 +91,7 @@ class PermissionGroupList extends React.Component<
   };
 
   public requestList = () => {
-    const { options } = this.props;
+    const { options, onRowClick } = this.props;
     this.setState({ data: undefined });
     AdminUserGroups.List({
       ...options,
@@ -112,12 +103,12 @@ class PermissionGroupList extends React.Component<
   };
 
   public render() {
-    const { onSort, options } = this.props;
+    const { onSort, options, onRowClick } = this.props;
     const { data } = this.state;
     return (
       <EnhancedTable
         data={data && data.Items}
-        rowActions={rowActionsDefinition}
+        onRowClick={onRowClick}
         columns={columnDefinition}
         sortBy={options.sortBy}
         onSort={onSort}
@@ -126,4 +117,4 @@ class PermissionGroupList extends React.Component<
   }
 }
 
-export default withStyles(styles)(PermissionGroupList);
+export default withStyles(styles)(AdminUserGroupList);

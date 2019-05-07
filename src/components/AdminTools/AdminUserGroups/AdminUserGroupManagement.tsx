@@ -8,19 +8,20 @@ import {
 } from "@material-ui/core";
 
 import { RouteComponentProps } from "react-router";
-import PermissionGroupList, {
-  PermissionGroupListOptions
-} from "./PermissionGroupList";
+import AdminUserGroupList, {
+  AdminUserGroupListOptions
+} from "./AdminUserGroupList";
 import OcSearch from "../../Shared/OcSearch";
 import OcPagination, { OcMetaData } from "../../Shared/OcPagination";
 import IconButtonLink from "../../Shared/IconButtonLink";
 import { Add } from "@material-ui/icons";
+import { UserGroup } from "ordercloud-javascript-sdk";
 
-interface PermissionGroupMangementProps extends RouteComponentProps {
+interface AdminUserGroupMangementProps extends RouteComponentProps {
   classes: any;
 }
 
-interface PermissionGroupMangementState {
+interface AdminUserGroupMangementState {
   refresh: boolean;
   meta?: OcMetaData;
 }
@@ -51,11 +52,11 @@ const styles = (theme: Theme) =>
     }
   });
 
-class PermissionGroupMangement extends React.Component<
-  PermissionGroupMangementProps,
-  PermissionGroupMangementState
+class AdminUserGroupMangement extends React.Component<
+  AdminUserGroupMangementProps,
+  AdminUserGroupMangementState
 > {
-  public state: PermissionGroupMangementState = {
+  public state: AdminUserGroupMangementState = {
     refresh: false
   };
 
@@ -93,7 +94,7 @@ class PermissionGroupMangement extends React.Component<
     });
   };
 
-  public getOptions = (keys: string[]): PermissionGroupListOptions => {
+  public getOptions = (keys: string[]): AdminUserGroupListOptions => {
     const { search } = this.props.location;
     const params = new URLSearchParams(search);
     var options: any = {};
@@ -103,6 +104,11 @@ class PermissionGroupMangement extends React.Component<
       }
     });
     return options;
+  };
+
+  public handleRowClick = (userGroup: UserGroup) => {
+    const { history } = this.props;
+    history.push(`/admin/roles/${userGroup.ID}`);
   };
 
   public render() {
@@ -141,8 +147,9 @@ class PermissionGroupMangement extends React.Component<
             )}
           </Toolbar>
         </AppBar>
-        <PermissionGroupList
+        <AdminUserGroupList
           refresh={this.state.refresh}
+          onRowClick={this.handleRowClick}
           onSort={this.handleColumnSort}
           onChange={this.handleListUpdate}
           options={options}
@@ -154,4 +161,4 @@ class PermissionGroupMangement extends React.Component<
   }
 }
 
-export default withStyles(styles)(PermissionGroupMangement);
+export default withStyles(styles)(AdminUserGroupMangement);

@@ -2,9 +2,8 @@ import React from "react";
 import {
   SecurityProfiles,
   SecurityProfile,
-  AdminUserGroups,
   UserGroup,
-  SecurityProfileAssignment
+  ListSecurityProfileAssignment
 } from "ordercloud-javascript-sdk";
 import {
   FormControlLabel,
@@ -20,36 +19,28 @@ import {
   Typography,
   Grid
 } from "@material-ui/core";
-import { RouteComponentProps } from "react-router";
-import ButtonLink from "../../Shared/ButtonLink";
 import Case from "case";
 import ContentLoading from "../../Layout/ContentLoading";
 
-interface PermissionGroupFormParams {
-  groupId?: string;
-}
-
-interface PermissionGroupFormProps
-  extends RouteComponentProps<PermissionGroupFormParams> {
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+interface AdminUserGroupFormProps {
+  onSubmit: (userGroup: UserGroup, selectedProfiles: string[]) => Promise<any>;
+  disabled?: boolean;
+  userGroup: UserGroup;
+  assignments?: ListSecurityProfileAssignment;
   classes: any;
   theme: Theme;
 }
 
-interface PermissionGroupFeatures {
+interface AdminUserGroupFeatures {
   [category: string]: SecurityProfile[];
 }
 
-interface PermissionGroupFormState {
-  featureTypes: PermissionGroupFeatures;
-  assignments: SecurityProfileAssignment[];
-  profileIds: Array<string>;
-  group: UserGroup;
+interface AdminUserGroupFormState {
+  featureTypes: AdminUserGroupFeatures;
+  selectedProfiles: string[];
+  userGroup: UserGroup;
+  errors: string[];
 }
-
-const defaultGroupXp = {
-  IsPermissionGroup: true
-};
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -65,17 +56,42 @@ const styles = (theme: Theme) =>
     }
   });
 
-class PermissionGroupForm extends React.Component<
-  PermissionGroupFormProps,
-  PermissionGroupFormState
+class AdminUserGroupForm extends React.Component<
+  AdminUserGroupFormProps,
+  AdminUserGroupFormState
 > {
-  public componentDidMount = () => {
-    SecurityProfiles.List({
+  public componentDidMount = async () => {
+    this.setInitialState();
+    const featureTypes = await this.getFeatureProfiles();
+    this.setState({
+      featureTypes
+    });
+  };
+
+  public componentDidUpdate = (prevProps: AdminUserGroupFormProps) => {
+    if (this.props.disabled && this.props.disabled !== prevProps.disabled) {
+      this.setInitialState();
+    }
+  };
+
+  public setInitialState = () => {
+    const { userGroup, assignments } = this.props;
+    this.setState({
+      errors: new Array(),
+      userGroup,
+      selectedProfiles: assignments
+        ? assignments.Items!.map(a => a.SecurityProfileID!)
+        : new Array()
+    });
+  };
+
+  public getFeatureProfiles = async () => {
+    return await SecurityProfiles.List({
       page: 1,
       pageSize: 100,
       filters: { ID: "feature-*" }
     }).then(data => {
-      const featureTypes: PermissionGroupFeatures = {};
+      const featureTypes: AdminUserGroupFeatures = {};
       data.Items!.forEach(feature => {
         const idSplit = feature!.ID!.split("-");
         let featureCategory: string = "";
@@ -90,42 +106,19 @@ class PermissionGroupForm extends React.Component<
           featureTypes[featureCategory] = [feature];
         }
       });
-      this.setState({ featureTypes });
+      return featureTypes;
     });
-
-    const groupId = this.props.match.params.groupId;
-    if (groupId) {
-      AdminUserGroups.Get(groupId).then(group => {
-        this.setState({ group });
-      });
-      SecurityProfiles.ListAssignments({
-        userGroupID: groupId
-      }).then(data => {
-        var assignments =
-          data.Items && data.Items.length ? data.Items : new Array();
-        this.setState({
-          assignments,
-          profileIds: assignments.map(
-            assignment => assignment.SecurityProfileID
-          )
-        });
-      });
-    } else {
-      this.setState({
-        assignments: new Array(),
-        profileIds: new Array(),
-        group: { Name: "", Description: "" }
-      });
-    }
   };
 
   public handleFeatureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { profileIds } = this.state;
+    const { selectedProfiles } = this.state;
     if (event.target.checked) {
-      this.setState({ profileIds: [...profileIds, event.target.value] });
+      this.setState({
+        selectedProfiles: [...selectedProfiles, event.target.value]
+      });
     } else {
       this.setState({
-        profileIds: profileIds.filter(a => a !== event.target.value)
+        selectedProfiles: selectedProfiles.filter(a => a !== event.target.value)
       });
     }
   };
@@ -133,86 +126,33 @@ class PermissionGroupForm extends React.Component<
   public handleInputChange = (fieldName: "Name" | "Description" | "ID") => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const { group } = this.state;
-    group[fieldName] = event.target.value;
-    this.setState({ group });
+    const { userGroup } = this.state;
+    userGroup[fieldName] = event.target.value;
+    this.setState({ userGroup });
   };
 
   public onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const groupId = this.props.match.params.groupId;
-    const { assignments, profileIds, group } = this.state;
-    if (groupId) {
-      AdminUserGroups.Save(groupId, group).then(updatedUserGroup => {
-        assignments.forEach(assignment => {
-          if (profileIds.includes(assignment.SecurityProfileID!)) {
-            return;
-          }
-          SecurityProfiles.DeleteAssignment(assignment.SecurityProfileID!, {
-            userGroupID: updatedUserGroup.ID
-          });
-        });
-        profileIds.forEach(id => {
-          if (
-            assignments.filter(
-              assignment => assignment.SecurityProfileID === id
-            ).length
-          ) {
-            return;
-          }
-          SecurityProfiles.SaveAssignment({
-            SecurityProfileID: id,
-            UserGroupID: updatedUserGroup.ID
-          });
-        });
-        this.afterSubmit(true);
-      });
-    } else {
-      AdminUserGroups.Create({
-        ...group,
-        ...{ xp: defaultGroupXp }
-      }).then(newUserGroup => {
-        profileIds.forEach(id => {
-          SecurityProfiles.SaveAssignment({
-            SecurityProfileID: id,
-            UserGroupID: newUserGroup.ID
-          });
-        });
-        this.afterSubmit();
+    const { onSubmit } = this.props;
+    const { userGroup, selectedProfiles } = this.state;
+    if (onSubmit) {
+      return onSubmit(userGroup, selectedProfiles).catch(error => {
+        console.log(error);
       });
     }
-  };
-
-  public afterSubmit = (update?: boolean) => {
-    if (update) {
-    } else {
-    }
-    this.props.history.push("/admin/roles");
   };
 
   public render() {
-    const { classes, theme } = this.props;
-    return (
+    const { classes, theme, disabled } = this.props;
+    return this.state ? (
       <form
-        name="PermissionGroupForm"
+        name="AdminUserGroupForm"
         className={classes.root}
         onSubmit={this.onSubmit}
       >
-        {this.state && this.state.group ? (
-          <Typography component="legend" variant="h5">{`${
-            this.state.group.ID ? "Edit" : "New"
-          } User Role`}</Typography>
-        ) : (
-          <ContentLoading
-            rows={1}
-            height={theme.typography.h5.fontSize}
-            width={250}
-          />
-        )}
-
         <Grid container spacing={32}>
           <Grid item md={5}>
-            {this.state && this.state.group ? (
+            {this.state && this.state.userGroup ? (
               <React.Fragment>
                 <TextField
                   label="Identifier"
@@ -221,8 +161,9 @@ class PermissionGroupForm extends React.Component<
                   variant="outlined"
                   name="ID"
                   required
+                  InputProps={{ readOnly: disabled }}
                   onChange={this.handleInputChange("ID")}
-                  value={this.state.group.ID}
+                  value={this.state.userGroup.ID}
                 />
                 <TextField
                   label="Name"
@@ -231,8 +172,9 @@ class PermissionGroupForm extends React.Component<
                   variant="outlined"
                   name="Name"
                   required
+                  InputProps={{ readOnly: disabled }}
                   onChange={this.handleInputChange("Name")}
-                  value={this.state.group.Name}
+                  value={this.state.userGroup.Name}
                 />
                 <TextField
                   label="Description"
@@ -242,8 +184,9 @@ class PermissionGroupForm extends React.Component<
                   rows={3}
                   variant="outlined"
                   name="Description"
+                  InputProps={{ readOnly: disabled }}
                   onChange={this.handleInputChange("Description")}
-                  value={this.state.group.Description}
+                  value={this.state.userGroup.Description}
                 />
               </React.Fragment>
             ) : (
@@ -257,7 +200,7 @@ class PermissionGroupForm extends React.Component<
             <Grid container spacing={16}>
               {this.state &&
               this.state.featureTypes &&
-              this.state.profileIds ? (
+              this.state.selectedProfiles ? (
                 Object.entries(this.state.featureTypes).map(
                   ([category, features], index) => (
                     <FormControl margin="normal" key={index}>
@@ -266,10 +209,11 @@ class PermissionGroupForm extends React.Component<
                         {features.map(feature => (
                           <FormControlLabel
                             key={feature.ID}
+                            disabled={disabled}
                             control={
                               <Checkbox
                                 color="primary"
-                                checked={this.state.profileIds.includes(
+                                checked={this.state.selectedProfiles.includes(
                                   feature.ID!
                                 )}
                                 value={feature.ID}
@@ -300,30 +244,27 @@ class PermissionGroupForm extends React.Component<
             </Grid>
           </Grid>
         </Grid>
-
-        <FormControl margin="normal" fullWidth className={classes.formButtons}>
-          <ButtonLink
-            type="button"
-            size="large"
-            color="default"
-            variant="outlined"
-            to="/admin/roles"
+        {!disabled && (
+          <FormControl
+            margin="normal"
+            fullWidth
+            className={classes.formButtons}
           >
-            Cancel
-          </ButtonLink>
-          <div className={classes.spacer} />
-          <Button
-            type="submit"
-            size="large"
-            color="secondary"
-            variant="contained"
-          >
-            Save
-          </Button>
-        </FormControl>
+            <Button
+              type="submit"
+              size="large"
+              color="secondary"
+              variant="contained"
+            >
+              Save Changes
+            </Button>
+          </FormControl>
+        )}
       </form>
+    ) : (
+      <ContentLoading rows={6} />
     );
   }
 }
 
-export default withStyles(styles, { withTheme: true })(PermissionGroupForm);
+export default withStyles(styles, { withTheme: true })(AdminUserGroupForm);

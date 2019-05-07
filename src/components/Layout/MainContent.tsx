@@ -5,14 +5,16 @@ import DummyComponent from "../Dummy/DummyComponent";
 import OrderManagement from "../Orders/OrderManagement";
 import Profile from "../Profile/Profile";
 import { AppContext } from "../../App.context";
-import PermissionGroupManagement from "../AdminTools/PermissionGroups/PermissionGroupManagement";
-import PermissionGroupForm from "../AdminTools/PermissionGroups/PermissionGroupForm";
+import AdminUserGroupManagement from "../AdminTools/AdminUserGroups/AdminUserGroupManagement";
+import AdminUserGroupForm from "../AdminTools/AdminUserGroups/AdminUserGroupForm";
 import AdminUserManagement from "../AdminTools/AdminUsers/AdminUserManagement";
 import AdminUserForm from "../AdminTools/AdminUsers/AdminUserForm";
 import AdminTools from "../AdminTools/AdminTools";
 import AdminUserDetail from "../AdminTools/AdminUsers/AdminUserDetail";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminUserCreate from "../AdminTools/AdminUsers/AdminUserCreate";
+import AdminUserGroupCreate from "../AdminTools/AdminUserGroups/AdminUserGroupCreate";
+import AdminUserGroupDetail from "../AdminTools/AdminUserGroups/AdminUserGroupDetail";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -72,23 +74,33 @@ class MainContent extends React.Component<MainContentProps> {
               ]}
               component={AdminUserDetail}
             />
+            <ProtectedRoute
+              path="/admin/roles"
+              exact
+              component={AdminUserGroupManagement}
+              permission={[
+                "feature-internal-user-admin",
+                "feature-internal-user-reader"
+              ]}
+            />
+            <ProtectedRoute
+              path="/admin/roles/create"
+              exact
+              permission={["feature-internal-user-admin"]}
+              component={AdminUserGroupCreate}
+            />
+            <ProtectedRoute
+              path="/admin/roles/:id"
+              exact
+              permission={[
+                "feature-internal-user-admin",
+                "feature-internal-user-reader"
+              ]}
+              component={AdminUserGroupDetail}
+            />
             <AppContext.Consumer>
               {context => (
                 <React.Fragment>
-                  <Route
-                    path="/admin/roles"
-                    exact
-                    component={PermissionGroupManagement}
-                  />
-                  <Route
-                    path="/admin/roles/create"
-                    exact
-                    component={PermissionGroupForm}
-                  />
-                  <Route
-                    path="/admin/roles/:groupId"
-                    component={PermissionGroupForm}
-                  />
                   <Route
                     path="/profile"
                     render={props => <Profile {...props} user={context.user} />}

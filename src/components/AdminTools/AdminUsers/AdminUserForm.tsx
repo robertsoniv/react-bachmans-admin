@@ -18,19 +18,16 @@ import {
   Typography
 } from "@material-ui/core";
 import {
-  AdminUsers,
   AdminUserGroups,
   User,
   ListUserGroup,
   ListUserGroupAssignment,
   AdminAddresses,
-  ListAddress,
-  UserGroup
+  ListAddress
 } from "ordercloud-javascript-sdk";
-import { DEFAULT_OPTIONS } from "../PermissionGroups/PermissionGroupList";
+import { DEFAULT_OPTIONS } from "../AdminUserGroups/AdminUserGroupList";
 import ContentLoading from "../../Layout/ContentLoading";
 import OcPasswordField from "../../Shared/OcPasswordField";
-import { ErrorSharp } from "@material-ui/icons";
 
 interface AdminUserFormProps {
   user: User;
@@ -44,9 +41,7 @@ interface AdminUserFormProps {
 interface AdminUserFormState {
   user: User;
   groups: ListUserGroup;
-  assignments: ListUserGroupAssignment;
   selectedRoles: string[];
-  newSelected: number[];
   errors: string[];
   stores: ListAddress;
   passwordConfirmation: string;
@@ -134,10 +129,6 @@ class AdminUserForm extends React.Component<
         }
       };
     });
-  };
-
-  public handleSelectionChange = (selected: number[]) => {
-    this.setState({ newSelected: selected });
   };
 
   public handlePasswordChange = (password: string) => {

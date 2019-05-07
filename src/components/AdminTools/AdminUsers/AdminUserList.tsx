@@ -1,12 +1,8 @@
 import { Chip, Typography } from "@material-ui/core";
-import { EditOutlined, VisibilityOutlined } from "@material-ui/icons";
 import { Address, AdminUsers, ListUser, User } from "ordercloud-javascript-sdk";
 import React from "react";
 import { AppContext } from "../../../App.context";
-import EnhancedTable, {
-  EnhancedTableColumn,
-  EnhancedTableRowAction
-} from "../../Shared/EnhancedTable";
+import EnhancedTable, { EnhancedTableColumn } from "../../Shared/EnhancedTable";
 
 const columnDefinition: EnhancedTableColumn[] = [
   {
@@ -38,23 +34,6 @@ const columnDefinition: EnhancedTableColumn[] = [
     value: "Active",
     CellProps: {
       align: "center"
-    }
-  }
-];
-
-const rowActionsDefinition: EnhancedTableRowAction[] = [
-  {
-    title: "Edit User Info",
-    icon: <EditOutlined />,
-    link: (user: User) => {
-      return `/admin/users/edit/${user.ID}`;
-    }
-  },
-  {
-    title: "View User Info",
-    icon: <VisibilityOutlined />,
-    link: (user: User) => {
-      return `/admin/users/view/${user.ID}`;
     }
   }
 ];
