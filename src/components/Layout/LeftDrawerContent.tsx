@@ -19,6 +19,7 @@ import ProfileIcon from "@material-ui/icons/AccountCircleOutlined";
 import ProfileIconActive from "@material-ui/icons/AccountCircleTwoTone";
 import React from "react";
 import ListItemNavLink from "../Shared/ListItemNavLink";
+import ProtectedContent from "./ProtectedContent";
 
 const LeftDrawerContent: React.FunctionComponent = () => {
   return (
@@ -72,12 +73,19 @@ const LeftDrawerContent: React.FunctionComponent = () => {
           icon={<MiscellaneousIcon />}
           activeIcon={<MiscellaneousIconActive />}
         /> */}
-        <ListItemNavLink
-          to="/admin"
-          primary="Admin Tools"
-          icon={<SettingsIcon />}
-          activeIcon={<SettingsIconActive />}
-        />
+        <ProtectedContent
+          hasAccess={p =>
+            p.includes("feature-internal-user-admin") ||
+            p.includes("feature-internal-user-reader")
+          }
+        >
+          <ListItemNavLink
+            to="/admin"
+            primary="Admin Tools"
+            icon={<SettingsIcon />}
+            activeIcon={<SettingsIconActive />}
+          />
+        </ProtectedContent>
       </List>
     </Slide>
   );
