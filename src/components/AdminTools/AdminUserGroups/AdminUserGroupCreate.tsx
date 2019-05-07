@@ -11,7 +11,8 @@ import {
   AdminUserGroups,
   AdminUsers,
   User,
-  UserGroup
+  UserGroup,
+  SecurityProfiles
 } from "ordercloud-javascript-sdk";
 import React from "react";
 import { RouteComponentProps } from "react-router";
@@ -54,21 +55,23 @@ const initialUserGroup: UserGroup = {
 };
 
 class AdminUserGroupCreate extends React.Component<AdminUserGroupCreateProps> {
-  public handleFormSubmit = (newUser: User, selectedRoles: string[]) => {
-    return AdminUsers.Create({
-      ID: newUser.Username,
-      ...newUser
-    }).then(savedUser => {
+  public handleFormSubmit = (
+    newUserGroup: User,
+    selectedProfiles: string[]
+  ) => {
+    return AdminUserGroups.Create({
+      ...newUserGroup
+    }).then(savedUserGroup => {
       Promise.all(
-        selectedRoles.map(roleID => {
-          return AdminUserGroups.SaveUserAssignment({
-            UserGroupID: roleID,
-            UserID: savedUser.ID
+        selectedProfiles.map(profileID => {
+          return SecurityProfiles.SaveAssignment({
+            UserGroupID: savedUserGroup.ID,
+            SecurityProfileID: profileID
           });
         })
       ).then(() => {
         const { history } = this.props;
-        history.push(`/admin/users/${savedUser.ID}`);
+        history.push(`/admin/roles/${savedUserGroup.ID}`);
       });
     });
   };

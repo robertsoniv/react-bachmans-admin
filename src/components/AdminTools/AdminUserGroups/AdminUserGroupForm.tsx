@@ -123,12 +123,22 @@ class AdminUserGroupForm extends React.Component<
     }
   };
 
-  public handleInputChange = (fieldName: "Name" | "Description" | "ID") => (
+  public handleInputChange = (key: string) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const { userGroup } = this.state;
-    userGroup[fieldName] = event.target.value;
-    this.setState({ userGroup });
+    const value = event.target.value;
+    this.setState(state => {
+      return {
+        ...state,
+        errors: state.errors.filter(
+          e => key !== "ID" && e !== "UserGroup.IdMustBeUnique"
+        ),
+        userGroup: {
+          ...state.userGroup,
+          [key]: value
+        }
+      };
+    });
   };
 
   public onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -137,7 +147,7 @@ class AdminUserGroupForm extends React.Component<
     const { userGroup, selectedProfiles } = this.state;
     if (onSubmit) {
       return onSubmit(userGroup, selectedProfiles).catch(error => {
-        console.log(error);
+        console.log(JSON.stringify(error, null, 2));
       });
     }
   };

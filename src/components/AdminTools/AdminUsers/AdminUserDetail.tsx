@@ -109,7 +109,7 @@ class AdminUserDetail extends React.Component<
   };
 
   public handleFormSubmit = (newUser: User, selectedRoles: string[]) => {
-    return AdminUsers.Save(this.state.user.ID!, {
+    return AdminUsers.Save(this.props.match.params.id, {
       ...newUser,
       ID: newUser.Username
     }).then(savedUser => {

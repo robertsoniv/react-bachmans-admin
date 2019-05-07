@@ -16,6 +16,7 @@ import OcPagination, { OcMetaData } from "../../Shared/OcPagination";
 import IconButtonLink from "../../Shared/IconButtonLink";
 import { Add } from "@material-ui/icons";
 import { UserGroup } from "ordercloud-javascript-sdk";
+import ProtectedContent from "../../Layout/ProtectedContent";
 
 interface AdminUserGroupMangementProps extends RouteComponentProps {
   classes: any;
@@ -128,14 +129,20 @@ class AdminUserGroupMangement extends React.Component<
               onChange={this.handleSearchChange}
               value={options.search || ""}
             />
-            <div className={classes.spacer} />
-            <IconButtonLink
-              title="Create User Role"
-              to="/admin/roles/create"
-              className={classes.iconButton}
+            <ProtectedContent
+              hasAccess={p => p.includes("feature-internal-user-admin")}
             >
-              <Add />
-            </IconButtonLink>
+              <React.Fragment>
+                <div className={classes.spacer} />
+                <IconButtonLink
+                  title="Create User Role"
+                  to="/admin/roles/create"
+                  className={classes.iconButton}
+                >
+                  <Add />
+                </IconButtonLink>
+              </React.Fragment>
+            </ProtectedContent>
 
             <div className={classes.grow} />
             {this.state && this.state.meta && (

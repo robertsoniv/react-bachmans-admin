@@ -87,7 +87,15 @@ class AdminUserGroupDetail extends React.Component<
       });
   };
 
-  public rolesToRemove = (selected: string[]) => {
+  public componentDidUpdate = (prevProps: any, prevState: any) => {
+    if (this.state && this.state.userGroup) {
+      if (prevState && prevState.userGroup.ID !== this.state.userGroup.ID) {
+        console.log(this.state.userGroup.ID);
+      }
+    }
+  };
+
+  public profilesToAdd = (selected: string[]) => {
     const { assignments } = this.state;
     return compact(
       assignments.Items!.map(a => {
@@ -98,7 +106,7 @@ class AdminUserGroupDetail extends React.Component<
     );
   };
 
-  public rolesToAdd = (selected: string[]) => {
+  public profilesToRemove = (selected: string[]) => {
     const { assignments } = this.state;
     return compact(
       selected.map(s => {
@@ -113,11 +121,12 @@ class AdminUserGroupDetail extends React.Component<
     newUserGroup: UserGroup,
     selectedProfiles: string[]
   ) => {
+    console.log(this.state.userGroup.ID);
     return AdminUserGroups.Save(this.state.userGroup.ID!, {
       ...newUserGroup
     }).then(savedUserGroup => {
       var queue = new Array();
-      this.rolesToAdd(selectedProfiles).forEach(profileID => {
+      this.profilesToAdd(selectedProfiles).forEach(profileID => {
         queue.push(
           SecurityProfiles.SaveAssignment({
             SecurityProfileID: profileID,
@@ -125,7 +134,7 @@ class AdminUserGroupDetail extends React.Component<
           })
         );
       });
-      this.rolesToRemove(selectedProfiles).forEach(profileID => {
+      this.profilesToRemove(selectedProfiles).forEach(profileID => {
         queue.push(
           SecurityProfiles.DeleteAssignment(profileID, {
             userGroupID: savedUserGroup.ID
@@ -204,7 +213,7 @@ class AdminUserGroupDetail extends React.Component<
                   <OcConfirmDialog
                     open={this.state.confirmDeleteOpen}
                     title="Delete Internal User Role"
-                    confirmText="Delete User"
+                    confirmText="Delete Role"
                     cancelText="Cancel"
                     onConfirm={this.handleDeleteConfirm}
                     onCancel={this.handleDeleteCancel}
@@ -223,7 +232,7 @@ class AdminUserGroupDetail extends React.Component<
                 >
                   {this.state && this.state.editing
                     ? "Discard Changes"
-                    : "Edit User"}
+                    : "Edit User Role"}
                 </Button>
               </React.Fragment>
             </ProtectedContent>
