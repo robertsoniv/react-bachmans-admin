@@ -13,7 +13,8 @@ import {
   Checkbox,
   IconButton,
   Tooltip,
-  TableSortLabel
+  TableSortLabel,
+  Typography
 } from "@material-ui/core";
 import { TableCellProps } from "@material-ui/core/TableCell";
 import { IconProps } from "@material-ui/core/Icon";
@@ -63,6 +64,10 @@ const styles = (theme: Theme) =>
       "&:hover": {
         background: theme.palette.grey[200]
       }
+    },
+    noResults: {
+      padding: `${theme.spacing.unit * 4}px ${theme.spacing.unit * 3}px`,
+      textAlign: "center"
     }
   });
 
@@ -86,6 +91,7 @@ export interface EnhancedTableRowAction {
 
 interface EnhancedTableProps {
   classes: any;
+  noResults?: string;
   columns: EnhancedTableColumn[];
   data?: any[];
   sortBy?: string;
@@ -371,7 +377,14 @@ class EnhancedTable extends React.Component<
   };
 
   public render() {
-    const { data, columns, selectable, rowActions, className } = this.props;
+    const {
+      data,
+      columns,
+      selectable,
+      rowActions,
+      className,
+      noResults
+    } = this.props;
     const classes = this.props.classes!;
     const tableHead = this.tableHead();
     const tableFooter = this.tableFooter();
@@ -381,7 +394,26 @@ class EnhancedTable extends React.Component<
           {tableHead}
           <TableBody>
             {data ? (
-              data.map(this.tableBodyRow)
+              data.length ? (
+                data.map(this.tableBodyRow)
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={
+                      columns.length +
+                      (selectable ? 1 : 0) +
+                      (rowActions && rowActions.length ? 1 : 0)
+                    }
+                  >
+                    <Typography
+                      variant="overline"
+                      className={classes.noResults}
+                    >
+                      {noResults || "No results found."}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )
             ) : (
               <ContentLoading
                 type="table"

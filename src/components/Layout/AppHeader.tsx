@@ -14,6 +14,7 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import NotificationIcon from "@material-ui/icons/Notifications";
 import React from "react";
+import { Route, Switch } from "react-router-dom";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -54,6 +55,20 @@ class AppHeader extends React.Component<AppHeaderProps> {
             </IconButton>
             <Typography variant="h6" color="inherit" noWrap>
               Bachman's Admin
+            </Typography>
+            <div className={classes.grow} />
+            <Typography variant="h6" color="inherit" noWrap>
+              <Switch>
+                <Route path="/admin/users">
+                  <span>Internal Users</span>
+                </Route>
+                <Route path="/admin/roles">
+                  <span>User Roles</span>
+                </Route>
+                <Route path="/customers">
+                  <span>Customers</span>
+                </Route>
+              </Switch>
             </Typography>
             <div className={classes.grow} />
             <Button onClick={onLogout} color="inherit">

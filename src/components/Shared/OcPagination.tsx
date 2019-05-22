@@ -150,7 +150,7 @@ class OcPagination extends React.Component<
     const { TotalCount, TotalPages, ItemRange } = meta;
     return (
       <div className={classes.root}>
-        <Typography variant="body2" className={classes.typography}>
+        <Typography variant="body1" className={classes.typography}>
           {`${ItemRange[0]} - ${ItemRange[1]} of ${TotalCount}`}
         </Typography>
         <IconButton

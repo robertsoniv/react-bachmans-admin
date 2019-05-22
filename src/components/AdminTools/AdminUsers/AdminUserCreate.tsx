@@ -28,6 +28,11 @@ const styles = (theme: Theme) =>
       background: theme.palette.background.paper,
       borderBottom: `1px solid ${theme.palette.divider}`
     },
+    [theme.breakpoints.up("sm")]: {
+      appBar: {
+        top: theme.spacing.unit * 8
+      }
+    },
     iconButton: {
       padding: 10
     },

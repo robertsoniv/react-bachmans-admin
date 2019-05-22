@@ -15,6 +15,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import AdminUserCreate from "../AdminTools/AdminUsers/AdminUserCreate";
 import AdminUserGroupCreate from "../AdminTools/AdminUserGroups/AdminUserGroupCreate";
 import AdminUserGroupDetail from "../AdminTools/AdminUserGroups/AdminUserGroupDetail";
+import CustomerManagement from "../Customers/CustomerManagement";
+import CustomerDetail from "../Customers/CustomerDetail";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -41,6 +43,24 @@ class MainContent extends React.Component<MainContentProps> {
           <Switch>
             <Route path="/orders/build" exact component={DummyComponent} />
             <Route path="/orders/:tab?" component={OrderManagement} />
+            <ProtectedRoute
+              path="/customers"
+              exact
+              component={CustomerManagement}
+              permission={[
+                "feature-internal-user-admin",
+                "feature-internal-user-reader"
+              ]}
+            />
+            <ProtectedRoute
+              path="/customers/:id"
+              exact
+              component={CustomerDetail}
+              permission={[
+                "feature-internal-user-admin",
+                "feature-internal-user-reader"
+              ]}
+            />
             <ProtectedRoute
               path="/admin"
               exact

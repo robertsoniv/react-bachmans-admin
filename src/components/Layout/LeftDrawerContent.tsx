@@ -37,12 +37,6 @@ const LeftDrawerContent: React.FunctionComponent = () => {
           icon={<OrdersIcon />}
           activeIcon={<OrdersIconActive />}
         />
-        <ListItemNavLink
-          to="/customers"
-          primary="Customers"
-          icon={<CustomersIcon />}
-          activeIcon={<CustomersIconActive />}
-        />
         {/* <ListItemNavLink
           to="/categories"
           primary="Categories"
@@ -66,13 +60,26 @@ const LeftDrawerContent: React.FunctionComponent = () => {
           primary="Delivery"
           icon={<DeliveryIcon />}
           activeIcon={<DeliveryIconActive />}
-        />
+        /> */}
+        <ProtectedContent
+          hasAccess={p =>
+            p.includes("feature-internal-user-admin") ||
+            p.includes("feature-internal-user-reader")
+          }
+        >
+          <ListItemNavLink
+            to="/customers"
+            primary="Customers"
+            icon={<CustomersIcon />}
+            activeIcon={<CustomersIconActive />}
+          />
+        </ProtectedContent>
         <ListItemNavLink
           to="/miscellaneous"
           primary="Miscellaneous"
           icon={<MiscellaneousIcon />}
           activeIcon={<MiscellaneousIconActive />}
-        /> */}
+        />
         <ProtectedContent
           hasAccess={p =>
             p.includes("feature-internal-user-admin") ||
